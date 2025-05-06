@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.desafio_3_carona.model.Usuario;
+import com.generation.desafio_3_carona.repository.UsuarioRepository;
 
 
 @Service

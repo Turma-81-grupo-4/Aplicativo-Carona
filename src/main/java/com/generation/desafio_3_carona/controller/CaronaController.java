@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.repository.CaronaRepository;
+import com.generation.desafio_3_carona.repository.ViagemRepository;
 
 import jakarta.validation.Valid;
 
