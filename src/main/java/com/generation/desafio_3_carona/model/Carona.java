@@ -1,5 +1,6 @@
 package com.generation.desafio_3_carona.model;
 
+import java.awt.List;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -53,7 +54,7 @@ public class Carona {
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "carona", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("carona")
-	private Usuario usuario;
+	private List<Usuario> usuario;
 	
 	public Long getId() {
 		return id;
@@ -127,7 +128,7 @@ public class Carona {
 		this.viagem = viagem;
 	}
 
-	public Usuario getUsuario() {
+	public List<Usuario> getUsuario() {
 		return usuario;
 	}
 

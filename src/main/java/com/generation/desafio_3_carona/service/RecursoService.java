@@ -9,6 +9,7 @@ public class RecursoService {
      public void calcularTempo(Carona carona) {
             int velocidade = carona.getVelocidade();
             int distancia = carona.getDistancia();
-            carona.setTempoViagem(distancia/velocidade);
+            double tempoEmHoras = (double) distancia / velocidade;
+            carona.setTempoViagem((int) Math.round(tempoEmHoras));
         }
 }
