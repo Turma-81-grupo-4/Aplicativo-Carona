@@ -1,5 +1,14 @@
 package com.generation.desafio_3_carona.service;
 
-public class RecursoService {
+import org.springframework.stereotype.Service;
 
+import com.generation.desafio_3_carona.model.Carona;
+
+@Service
+public class RecursoService {
+     public void calcularTempo(Carona carona) {
+            int velocidade = carona.getVelocidade();
+            int distancia = carona.getDistancia();
+            carona.setTempoViagem(distancia/velocidade);
+        }
 }

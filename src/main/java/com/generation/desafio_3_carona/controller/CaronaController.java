@@ -21,34 +21,60 @@ import org.springframework.web.server.ResponseStatusException;
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.repository.CaronaRepository;
 import com.generation.desafio_3_carona.repository.ViagemRepository;
-
+import com.generation.desafio_3_carona.service.RecursoService;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/caronas")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CaronaController {
-	
+
+	private final RecursoService recursoService;
+
 	@Autowired
 	private CaronaRepository caronaRepository;
-	
+
 	@Autowired
 	private ViagemRepository viagemRepository;
 
+	CaronaController(RecursoService recursoService) {
+		this.recursoService = recursoService;
+	}
+
 	@GetMapping
 	public ResponseEntity<List<Carona>> getAll() {
-		return ResponseEntity.ok(caronaRepository.findAll());
+
+		List<Carona> caronas = caronaRepository.findAll();
+
+		for (Carona carona : caronas) {
+			recursoService.calcularTempo(carona);
+		}
+		return ResponseEntity.ok(caronas);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Carona> getById(@PathVariable Long id) {
-		return caronaRepository.findById(id).map(resposta -> ResponseEntity.ok(resposta))
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
+		Optional<Carona> caronaOptional = caronaRepository.findById(id);
+
+		if (caronaOptional.isPresent()) {
+			Carona carona = caronaOptional.get();
+			recursoService.calcularTempo(carona);
+			return ResponseEntity.ok(carona);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
 	}
 
 	@GetMapping("/destino/{destino}")
-	public ResponseEntity<List<Carona>> getByTitulo(@PathVariable String destino) {
-		return ResponseEntity.ok(caronaRepository.findAllByDestinoContainingIgnoreCase(destino));
+	public ResponseEntity<List<Carona>> getByDestino(@PathVariable String destino) {
+
+		List<Carona> caronas = caronaRepository.findAllByDestinoContainingIgnoreCase(destino);
+
+		for (Carona carona : caronas) {
+			recursoService.calcularTempo(carona);
+		}
+		return ResponseEntity.ok(caronas);
 	}
 
 	@PostMapping

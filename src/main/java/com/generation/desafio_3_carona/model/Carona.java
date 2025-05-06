@@ -4,11 +4,14 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -42,13 +45,13 @@ public class Carona {
 	@NotNull
 	private int velocidade;
 	
-	private int tempoViagem;
+	private double tempoViagem;
 	
 	@ManyToOne
 	@JsonIgnoreProperties("carona")
 	private Viagem viagem; 
 	
-	@ManyToOne
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "carona", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("carona")
 	private Usuario usuario;
 	
@@ -108,11 +111,11 @@ public class Carona {
 		this.velocidade = velocidade;
 	}
 
-	public int getTempoViagem() {
+	public double getTempoViagem() {
 		return tempoViagem;
 	}
 
-	public void setTempoViagem(int tempoViagem) {
+	public void setTempoViagem(double tempoViagem) {
 		this.tempoViagem = tempoViagem;
 	}
 
