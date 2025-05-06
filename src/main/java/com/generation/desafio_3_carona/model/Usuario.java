@@ -46,7 +46,7 @@ public class Usuario {
 	
 	@ManyToOne
 	@JsonIgnoreProperties("usuario")
-	private List<Carona> carona;
+	private Carona carona;
 
 	// Construtores
 	public Usuario(Long id, String nome, String usuario, String senha, String foto, String tipo) {
@@ -115,12 +115,12 @@ public class Usuario {
 	}
 
 
-	public List<Carona> getCarona() {
+	public Carona getCarona() {
 		return carona;
 	}
 
 
-	public void setCarona(List<Carona> carona) {
+	public void setCarona(Carona carona) {
 		this.carona = carona;
 	}
 	

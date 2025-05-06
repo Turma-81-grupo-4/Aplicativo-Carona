@@ -1,6 +1,6 @@
 package com.generation.desafio_3_carona.model;
 
-import java.awt.List;
+import java.util.List;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -132,7 +132,7 @@ public class Carona {
 		return usuario;
 	}
 
-	public void setUsuario(Usuario usuario) {
+	public void setUsuario(List<Usuario> usuario) {
 		this.usuario = usuario;
 	}
 	
