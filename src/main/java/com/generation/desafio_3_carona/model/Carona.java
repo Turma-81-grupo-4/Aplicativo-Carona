@@ -42,7 +42,6 @@ public class Carona {
 	@NotNull
 	private int velocidade;
 	
-	@NotNull
 	private int tempoViagem;
 	
 	@ManyToOne
