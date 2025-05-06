@@ -1,6 +1,6 @@
 # 🚗 App Carona - Sistema de Compartilhamento de Viagens
 
-Projeto desenvolvido para a conclusão do **Desafio 2** no Projeto Integrador pelo **Grupo 4**.
+Projeto desenvolvido para a conclusão do **Desafio 3** no Projeto Integrador pelo **Grupo 4**.
 
 ## 📘 Introdução
 
