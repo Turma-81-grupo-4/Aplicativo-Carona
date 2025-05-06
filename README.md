@@ -62,7 +62,7 @@ Permitir que os usuários se cadastrem como motoristas ou passageiros, criem ou 
 
 **Desenvolvedores:**
 
-*[Guilherme Dino](https://github.com/meDinoo)
+* [Guilherme Dino](https://github.com/meDinoo)
 * [Camille Tarine](https://github.com/CahTarine)
 * [Carlos Henrique da Silva Barbosa](https://github.com/Henrykeeh)
 * [Henrique Machado](https://github.com/scottineo)
