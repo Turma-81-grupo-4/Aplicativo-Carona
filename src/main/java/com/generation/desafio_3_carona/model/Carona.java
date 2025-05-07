@@ -1,58 +1,61 @@
 package com.generation.desafio_3_carona.model;
 
+import java.util.List;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table (name = "tb_caronas")
+@Table(name = "tb_caronas")
 public class Carona {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank
 	@Size(min = 10, max = 255)
 	private String destino;
-	
+
 	@NotBlank
 	@Size(min = 10, max = 255)
 	private String origem;
-	
+
 	@NotNull
 	private int vagas;
-	
+
 	@NotNull
 	private LocalDate dataViagem;
-	
+
 	@NotNull
 	private int distancia;
-	
+
 	@NotNull
 	private int velocidade;
-	
-	@NotNull
-	private int tempoViagem;
-	
+
+	private double tempoViagem;
+
 	@ManyToOne
 	@JsonIgnoreProperties("carona")
-	private Viagem viagem; 
-	
-	@ManyToOne
+	private Viagem viagem;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "carona", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("carona")
-	private Usuario usuario;
-	
+	private List<Usuario> usuario;
+
 	public Long getId() {
 		return id;
 	}
@@ -109,11 +112,11 @@ public class Carona {
 		this.velocidade = velocidade;
 	}
 
-	public int getTempoViagem() {
+	public double getTempoViagem() {
 		return tempoViagem;
 	}
 
-	public void setTempoViagem(int tempoViagem) {
+	public void setTempoViagem(double tempoViagem) {
 		this.tempoViagem = tempoViagem;
 	}
 
@@ -125,13 +128,12 @@ public class Carona {
 		this.viagem = viagem;
 	}
 
-	public Usuario getUsuario() {
+	public List<Usuario> getUsuario() {
 		return usuario;
 	}
 
-	public void setUsuario(Usuario usuario) {
+	public void setUsuario(List<Usuario> usuario) {
 		this.usuario = usuario;
 	}
-	
-	
+
 }

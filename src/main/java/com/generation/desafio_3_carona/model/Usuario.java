@@ -1,16 +1,15 @@
 package com.generation.desafio_3_carona.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.CascadeType;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,13 +23,14 @@ public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank
 	private String tipo;
 
 	@NotNull(message = "O Atributo Nome é Obrigatório!")
 	private String nome;
 
+	@Schema(example = "email@email.com")
 	@NotNull(message = "O Atributo Usuário é Obrigatório!")
 	@Email(message = "O Atributo Usuário deve ser um email válido!")
 	private String usuario;
@@ -41,10 +41,10 @@ public class Usuario {
 
 	@Size(max = 5000, message = "O link da foto não pode ser maior do que 5000 caracteres")
 	private String foto;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.REMOVE)
+
+	@ManyToOne
 	@JsonIgnoreProperties("usuario")
-	private List<Carona> carona;
+	private Carona carona;
 
 	// Construtores
 	public Usuario(Long id, String nome, String usuario, String senha, String foto, String tipo) {
@@ -55,7 +55,6 @@ public class Usuario {
 		this.foto = foto;
 		this.tipo = tipo;
 	}
-
 
 	// Sobrecarga com construtor vazio, para tirar a obrigatoriedade de
 	// preenchimentos dos atributos
@@ -112,15 +111,12 @@ public class Usuario {
 		this.tipo = tipo;
 	}
 
-
-	public List<Carona> getCarona() {
+	public Carona getCarona() {
 		return carona;
 	}
 
-
-	public void setCarona(List<Carona> carona) {
+	public void setCarona(Carona carona) {
 		this.carona = carona;
 	}
-	
-	
+
 }
