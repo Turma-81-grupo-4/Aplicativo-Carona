@@ -77,9 +77,7 @@ Permitir que os usuários se cadastrem como motoristas ou passageiros, criem ou 
 ## 📄 Documentação
 
 ### 📄 Escopo do Projeto
-
-[👉 Clique aqui para conferir o Escopo do Projeto](https://docs.google.com/document/d/1V4fE3ThWG66RuzuOfmdq-gMTM_G_lyeNGG6MJkHVWxs/edit?tab=t.0)
-
+[👉Clique aqui para baixar o PDF do escopo do projeto](https://drive.google.com/uc?export=download&id=16LRie7NVny_rfNj46r5s-CV2IiII50Ju)
 
 * Projeto em deploy:* [Clique aqui pra conferir o swagger](https://aplicativo-carona-2.onrender.com)
 ---
