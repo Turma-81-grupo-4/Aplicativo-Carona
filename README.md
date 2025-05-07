@@ -23,7 +23,7 @@ Permitir que os usuários se cadastrem como motoristas ou passageiros, criem ou 
 
 ## 🗃️ DER (Diagrama Entidade-Relacionamento)
 
-![imagem DER]([img/DER.png](https://cdn.discordapp.com/attachments/1342248055033827425/1369648357546397736/image.png?ex=681c9fef&is=681b4e6f&hm=ec7d66ea9815359c3b655e067c23f00a1fc7245a469ba1dbf0bab86bc425c833&))
+![imagem DER](https://uploaddeimagens.com.br/imagens/di1KbNY)
 
 ## ▶️ Como rodar o projeto (passo a passo raiz)
 
