@@ -23,7 +23,7 @@ Permitir que os usuários se cadastrem como motoristas ou passageiros, criem ou 
 
 ## 🗃️ DER (Diagrama Entidade-Relacionamento)
 
-![imagem DER](https://uploaddeimagens.com.br/imagens/di1KbNY)
+![imagem DER](https://uploaddeimagens.com.br/images/004/896/705/original/DER_carona.png?1746626744)
 
 ## ▶️ Como rodar o projeto (passo a passo raiz)
 
