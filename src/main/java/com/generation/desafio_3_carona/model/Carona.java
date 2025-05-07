@@ -19,43 +19,43 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table (name = "tb_caronas")
+@Table(name = "tb_caronas")
 public class Carona {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank
 	@Size(min = 10, max = 255)
 	private String destino;
-	
+
 	@NotBlank
 	@Size(min = 10, max = 255)
 	private String origem;
-	
+
 	@NotNull
 	private int vagas;
-	
+
 	@NotNull
 	private LocalDate dataViagem;
-	
+
 	@NotNull
 	private int distancia;
-	
+
 	@NotNull
 	private int velocidade;
-	
+
 	private double tempoViagem;
-	
+
 	@ManyToOne
 	@JsonIgnoreProperties("carona")
-	private Viagem viagem; 
-	
+	private Viagem viagem;
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "carona", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("carona")
 	private List<Usuario> usuario;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -135,6 +135,5 @@ public class Carona {
 	public void setUsuario(List<Usuario> usuario) {
 		this.usuario = usuario;
 	}
-	
-	
+
 }

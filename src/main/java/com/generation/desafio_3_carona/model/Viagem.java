@@ -14,19 +14,18 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
-
 @Entity
-@Table (name = "tb_viagens")
+@Table(name = "tb_viagens")
 public class Viagem {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank
 	private String tipoViagem;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "viagem", cascade = CascadeType.REMOVE) 
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "viagem", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("viagem")
 	private List<Carona> carona;
 
@@ -37,7 +36,6 @@ public class Viagem {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 
 	public List<Carona> getCarona() {
 		return carona;
@@ -54,6 +52,5 @@ public class Viagem {
 	public void setTipoViagem(String tipoViagem) {
 		this.tipoViagem = tipoViagem;
 	}
-	
-	
+
 }

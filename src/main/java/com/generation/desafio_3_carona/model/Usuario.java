@@ -1,7 +1,5 @@
 package com.generation.desafio_3_carona.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +23,7 @@ public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotBlank
 	private String tipo;
 
@@ -43,7 +41,7 @@ public class Usuario {
 
 	@Size(max = 5000, message = "O link da foto não pode ser maior do que 5000 caracteres")
 	private String foto;
-	
+
 	@ManyToOne
 	@JsonIgnoreProperties("usuario")
 	private Carona carona;
@@ -57,7 +55,6 @@ public class Usuario {
 		this.foto = foto;
 		this.tipo = tipo;
 	}
-
 
 	// Sobrecarga com construtor vazio, para tirar a obrigatoriedade de
 	// preenchimentos dos atributos
@@ -114,15 +111,12 @@ public class Usuario {
 		this.tipo = tipo;
 	}
 
-
 	public Carona getCarona() {
 		return carona;
 	}
 
-
 	public void setCarona(Carona carona) {
 		this.carona = carona;
 	}
-	
-	
+
 }
