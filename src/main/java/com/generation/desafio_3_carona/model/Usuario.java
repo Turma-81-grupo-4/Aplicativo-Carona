@@ -1,15 +1,17 @@
 package com.generation.desafio_3_carona.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,9 +26,6 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
-	private String tipo;
-
 	@NotNull(message = "O Atributo Nome é Obrigatório!")
 	private String nome;
 
@@ -39,29 +38,27 @@ public class Usuario {
 	@Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
 	private String senha;
 
-	@Size(max = 5000, message = "O link da foto não pode ser maior do que 5000 caracteres")
-	private String foto;
+	@NotBlank
+	private String tipo;
 
-	@ManyToOne
-	@JsonIgnoreProperties("usuario")
-	private Carona carona;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "motorista", cascade = CascadeType.REMOVE)
+	@JsonIgnoreProperties("motorista")
+	private List<Carona> caronasOferecidas;
 
-	// Construtores
-	public Usuario(Long id, String nome, String usuario, String senha, String foto, String tipo) {
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "passageiro", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties("passageiro")
+	private List<Passagem> passagens;
+
+	public Usuario(Long id, String nome, String usuario, String senha, String tipo) {
 		this.id = id;
 		this.nome = nome;
 		this.usuario = usuario;
 		this.senha = senha;
-		this.foto = foto;
 		this.tipo = tipo;
 	}
 
-	// Sobrecarga com construtor vazio, para tirar a obrigatoriedade de
-	// preenchimentos dos atributos
 	public Usuario() {
 	}
-
-	/* Getters and Setters */
 
 	public Long getId() {
 		return this.id;
@@ -95,14 +92,6 @@ public class Usuario {
 		this.senha = senha;
 	}
 
-	public String getFoto() {
-		return this.foto;
-	}
-
-	public void setFoto(String foto) {
-		this.foto = foto;
-	}
-
 	public String getTipo() {
 		return tipo;
 	}
@@ -111,12 +100,20 @@ public class Usuario {
 		this.tipo = tipo;
 	}
 
-	public Carona getCarona() {
-		return carona;
+	public List<Carona> getCaronasOferecidas() {
+		return caronasOferecidas;
 	}
 
-	public void setCarona(Carona carona) {
-		this.carona = carona;
+	public void setCaronasOferecidas(List<Carona> caronasOferecidas) {
+		this.caronasOferecidas = caronasOferecidas;
+	}
+
+	public List<Passagem> getPassagens() {
+		return passagens;
+	}
+
+	public void setPassagens(List<Passagem> passagens) {
+		this.passagens = passagens;
 	}
 
 }

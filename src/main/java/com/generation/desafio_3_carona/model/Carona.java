@@ -1,7 +1,7 @@
 package com.generation.desafio_3_carona.model;
 
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -26,19 +27,16 @@ public class Carona {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
-	@Size(min = 10, max = 255)
-	private String destino;
+	@NotNull
+	private LocalDate dataViagem;
 
 	@NotBlank
 	@Size(min = 10, max = 255)
 	private String origem;
 
-	@NotNull
-	private int vagas;
-
-	@NotNull
-	private LocalDate dataViagem;
+	@NotBlank
+	@Size(min = 10, max = 255)
+	private String destino;
 
 	@NotNull
 	private int distancia;
@@ -46,15 +44,27 @@ public class Carona {
 	@NotNull
 	private int velocidade;
 
+	@NotNull
+	private int vagas;
+
 	private double tempoViagem;
 
 	@ManyToOne
-	@JsonIgnoreProperties("carona")
-	private Viagem viagem;
+	@JoinColumn(name = "usuario_id")
+	@JsonIgnoreProperties({ "carona", "passagens","caronasOferecidas"})
+	private Usuario motorista;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "carona", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnoreProperties("carona")
-	private List<Usuario> usuario;
+	private List<Passagem> passagensVendidasNestaCarona;
+
+	public List<Passagem> getPassagensVendidasNestaCarona() {
+		return passagensVendidasNestaCarona;
+	}
+
+	public void setPassagensVendidasNestaCarona(List<Passagem> passagensVendidasNestaCarona) {
+		this.passagensVendidasNestaCarona = passagensVendidasNestaCarona;
+	}
 
 	public Long getId() {
 		return id;
@@ -64,12 +74,12 @@ public class Carona {
 		this.id = id;
 	}
 
-	public String getDestino() {
-		return destino;
+	public LocalDate getDataViagem() {
+		return dataViagem;
 	}
 
-	public void setDestino(String destino) {
-		this.destino = destino;
+	public void setDataViagem(LocalDate dataViagem) {
+		this.dataViagem = dataViagem;
 	}
 
 	public String getOrigem() {
@@ -80,20 +90,12 @@ public class Carona {
 		this.origem = origem;
 	}
 
-	public int getVagas() {
-		return vagas;
+	public String getDestino() {
+		return destino;
 	}
 
-	public void setVagas(int vagas) {
-		this.vagas = vagas;
-	}
-
-	public LocalDate getDataViagem() {
-		return dataViagem;
-	}
-
-	public void setDataViagem(LocalDate dataViagem) {
-		this.dataViagem = dataViagem;
+	public void setDestino(String destino) {
+		this.destino = destino;
 	}
 
 	public int getDistancia() {
@@ -112,6 +114,14 @@ public class Carona {
 		this.velocidade = velocidade;
 	}
 
+	public int getVagas() {
+		return vagas;
+	}
+
+	public void setVagas(int vagas) {
+		this.vagas = vagas;
+	}
+
 	public double getTempoViagem() {
 		return tempoViagem;
 	}
@@ -120,20 +130,12 @@ public class Carona {
 		this.tempoViagem = tempoViagem;
 	}
 
-	public Viagem getViagem() {
-		return viagem;
+	public Usuario getMotorista() {
+		return motorista;
 	}
 
-	public void setViagem(Viagem viagem) {
-		this.viagem = viagem;
-	}
-
-	public List<Usuario> getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(List<Usuario> usuario) {
-		this.usuario = usuario;
+	public void setMotorista(Usuario motorista) {
+		this.motorista = motorista;
 	}
 
 }

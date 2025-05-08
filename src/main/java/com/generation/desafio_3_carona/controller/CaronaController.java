@@ -20,7 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.repository.CaronaRepository;
-import com.generation.desafio_3_carona.repository.ViagemRepository;
+import com.generation.desafio_3_carona.repository.PassagemRepository;
+import com.generation.desafio_3_carona.repository.UsuarioRepository;
 import com.generation.desafio_3_carona.service.RecursoService;
 import jakarta.validation.Valid;
 
@@ -35,7 +36,10 @@ public class CaronaController {
 	private CaronaRepository caronaRepository;
 
 	@Autowired
-	private ViagemRepository viagemRepository;
+	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private PassagemRepository passagemRepository;
 
 	CaronaController(RecursoService recursoService) {
 		this.recursoService = recursoService;
@@ -79,22 +83,22 @@ public class CaronaController {
 
 	@PostMapping
 	public ResponseEntity<Carona> post(@Valid @RequestBody Carona carona) {
-		if (viagemRepository.existsById(carona.getViagem().getId()))
+		if (usuarioRepository.existsById(carona.getMotorista().getId()))
 			return ResponseEntity.status(HttpStatus.CREATED).body(caronaRepository.save(carona));
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Viagem não existe!", null);
 	}
 
-	@PutMapping
-	public ResponseEntity<Carona> put(@Valid @RequestBody Carona carona) {
-		if (viagemRepository.existsById(carona.getId())) {
-			if (viagemRepository.existsById(carona.getViagem().getId()))
-				return ResponseEntity.status(HttpStatus.OK).body(caronaRepository.save(carona));
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Viagem não existe", null);
-		}
-
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
+//	@PutMapping
+//	public ResponseEntity<Carona> put(@Valid @RequestBody Carona carona) {
+//		if (viagemRepository.existsById(carona.getId())) {
+//			if (viagemRepository.existsById(carona.getViagem().getId()))
+//				return ResponseEntity.status(HttpStatus.OK).body(caronaRepository.save(carona));
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Viagem não existe", null);
+//		}
+//
+//		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
