@@ -2,6 +2,8 @@ package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.generation.desafio_3_carona.views.Views;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,41 +16,41 @@ import jakarta.persistence.Table;
 @Table(name = "tb_passagens")
 public class Passagem {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Usuario getPassageiro() {
-		return passageiro;
-	}
+    public Usuario getPassageiro() {
+        return passageiro;
+    }
 
-	public void setPassageiro(Usuario passageiro) {
-		this.passageiro = passageiro;
-	}
+    public void setPassageiro(Usuario passageiro) {
+        this.passageiro = passageiro;
+    }
 
-	public Carona getCarona() {
-		return carona;
-	}
+    public Carona getCarona() {
+        return carona;
+    }
 
-	public void setCarona(Carona carona) {
-		this.carona = carona;
-	}
+    public void setCarona(Carona carona) {
+        this.carona = carona;
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "usuario_id")
-	@JsonIgnoreProperties(value = { "passagens", "carona" }, allowSetters = true)
-	private Usuario passageiro;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties(value = {"passagens", "carona"}, allowSetters = true)
+    private Usuario passageiro;
 
-	@ManyToOne
-	@JoinColumn(name = "carona_id")
-	@JsonIgnoreProperties({ "passagensVendidasNestaCarona", "usuario" })
-	private Carona carona;
+    @ManyToOne
+    @JoinColumn(name = "carona_id")
+    @JsonIgnoreProperties({"passagensVendidasNestaCarona", "usuario"})
+    private Carona carona;
 }

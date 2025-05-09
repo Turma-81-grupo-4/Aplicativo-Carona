@@ -8,5 +8,5 @@ import com.generation.desafio_3_carona.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-	public Optional<Usuario> findByUsuario(String Usuario);
+	public Optional<Usuario> findByEmail(String Email);
 }

@@ -3,50 +3,62 @@ package com.generation.desafio_3_carona.controller;
 import com.generation.desafio_3_carona.repository.UsuarioRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.desafio_3_carona.model.Passagem;
 import com.generation.desafio_3_carona.repository.CaronaRepository;
 import com.generation.desafio_3_carona.repository.PassagemRepository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/passagens")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PassagemController {
 
-	private final CaronaRepository caronaRepository;
+    private final CaronaRepository caronaRepository;
 
-	private final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-	@Autowired
-	private PassagemRepository passagemRepository;
+    private final PassagemRepository passagemRepository;
 
-	PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository) {
-		this.usuarioRepository = usuarioRepository;
-		this.caronaRepository = caronaRepository;
-	}
+    PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository, PassagemRepository passagemRepository, GenericResponseService responseBuilder) {
+        this.usuarioRepository = usuarioRepository;
+        this.caronaRepository = caronaRepository;
+        this.passagemRepository = passagemRepository;
+    }
 
-	@GetMapping
-	public ResponseEntity<List<Passagem>> getAll() {
-		return ResponseEntity.ok(passagemRepository.findAll());
-	}
+    @GetMapping
+    public ResponseEntity<List<Passagem>> getAll() {
+        return ResponseEntity.ok(passagemRepository.findAll());
+    }
 
-	@PostMapping("/criar")
-	public ResponseEntity<Passagem> criarPassagem(@RequestBody Passagem passagem) {
-		if (usuarioRepository.existsById(passagem.getPassageiro().getId())
-				&& caronaRepository.existsById(passagem.getCarona().getId()))
-			return ResponseEntity.status(HttpStatus.CREATED).body(passagemRepository.save(passagem));
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Viagem não existe!", null);
-	}
+    @PostMapping("/criar")
+    public ResponseEntity<Passagem> criarPassagem(@RequestBody Passagem passagem) {
+        if (usuarioRepository.existsById(passagem.getPassageiro().getId())
+                && caronaRepository.existsById(passagem.getCarona().getId()))
+            return ResponseEntity.status(HttpStatus.CREATED).body(passagemRepository.save(passagem));
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário ou carona não existem!", null);
+    }
 
+    @PutMapping
+    public ResponseEntity<Passagem> updatePassagem(@RequestBody Passagem passagem) {
+        if (usuarioRepository.existsById(passagem.getPassageiro().getId()))
+            return ResponseEntity.status(HttpStatus.CREATED).body(passagemRepository.save(passagem));
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passagem não exite!", null);
+    }
+
+    @DeleteMapping({"/{id}"})
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePassagem(@PathVariable Long id) {
+        Optional<Passagem> passagem = passagemRepository.findById(id);
+        if (passagem.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        passagemRepository.deleteById(id);
+    }
 }
