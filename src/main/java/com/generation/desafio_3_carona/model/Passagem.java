@@ -2,8 +2,6 @@ package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.generation.desafio_3_carona.views.Views;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

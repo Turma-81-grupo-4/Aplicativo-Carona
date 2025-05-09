@@ -5,7 +5,7 @@ import com.generation.desafio_3_carona.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springdoc.core.service.GenericResponseService;
+import com.generation.desafio_3_carona.service.RecursoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,15 +26,25 @@ public class PassagemController {
 
     private final PassagemRepository passagemRepository;
 
-    PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository, PassagemRepository passagemRepository, GenericResponseService responseBuilder) {
+    private final RecursoService recursoService;
+
+    PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository, PassagemRepository passagemRepository, RecursoService recursoService) {
         this.usuarioRepository = usuarioRepository;
         this.caronaRepository = caronaRepository;
         this.passagemRepository = passagemRepository;
+        this.recursoService = recursoService;
     }
 
     @GetMapping
     public ResponseEntity<List<Passagem>> getAll() {
+        List<Passagem> passagens = passagemRepository.findAll();
         return ResponseEntity.ok(passagemRepository.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Passagem> getById(@PathVariable Long id) {
+        return passagemRepository.findById(id).map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passagem não encontrada"));
     }
 
     @PostMapping("/criar")
