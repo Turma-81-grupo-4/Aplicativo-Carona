@@ -77,7 +77,7 @@ public class CaronaController {
 
     @PutMapping
     public ResponseEntity<Carona> put(@Valid @RequestBody Carona carona) {
-        if (caronaRepository.existsById(carona.getId())) {
+        if (caronaRepository.existsById(carona.getId()) && usuarioRepository.existsById(carona.getMotorista().getId())) {
             recursoService.calcularTempo(carona);
             return ResponseEntity.status(HttpStatus.OK).body(caronaRepository.save(carona));
         }

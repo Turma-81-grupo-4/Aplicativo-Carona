@@ -57,9 +57,9 @@ public class PassagemController {
 
     @PutMapping
     public ResponseEntity<Passagem> updatePassagem(@RequestBody Passagem passagem) {
-        if (usuarioRepository.existsById(passagem.getPassageiro().getId()))
+        if (usuarioRepository.existsById(passagem.getPassageiro().getId()) && passagemRepository.existsById(passagem.getId()))
             return ResponseEntity.status(HttpStatus.CREATED).body(passagemRepository.save(passagem));
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passagem não exite!", null);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passagem ou usuário não exite!", null);
     }
 
     @DeleteMapping({"/{id}"})
