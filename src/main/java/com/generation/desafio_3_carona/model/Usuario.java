@@ -1,15 +1,17 @@
 package com.generation.desafio_3_carona.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,103 +22,97 @@ import jakarta.validation.constraints.Size;
 @Table(name = "tb_usuarios")
 public class Usuario {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotBlank
-	private String tipo;
+    @NotNull(message = "O Atributo Nome é Obrigatório!")
+    private String nome;
 
-	@NotNull(message = "O Atributo Nome é Obrigatório!")
-	private String nome;
+    @Schema(example = "email@email.com")
+    @NotNull(message = "O atributo E-mail é obrigatório!")
+    @Email(message = "O atributo E-mail deve ser um email válido!")
+    private String email;
 
-	@Schema(example = "email@email.com")
-	@NotNull(message = "O Atributo Usuário é Obrigatório!")
-	@Email(message = "O Atributo Usuário deve ser um email válido!")
-	private String usuario;
+    @NotBlank(message = "O atributo Senha é obrigatório!")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
+    private String senha;
 
-	@NotBlank(message = "O Atributo Senha é Obrigatório!")
-	@Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
-	private String senha;
+    @NotBlank
+    private String tipo;
 
-	@Size(max = 5000, message = "O link da foto não pode ser maior do que 5000 caracteres")
-	private String foto;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "motorista", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties("motorista")
+    private List<Carona> caronasOferecidas;
 
-	@ManyToOne
-	@JsonIgnoreProperties("usuario")
-	private Carona carona;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passageiro", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("passageiro")
+    private List<Passagem> passagens;
 
-	// Construtores
-	public Usuario(Long id, String nome, String usuario, String senha, String foto, String tipo) {
-		this.id = id;
-		this.nome = nome;
-		this.usuario = usuario;
-		this.senha = senha;
-		this.foto = foto;
-		this.tipo = tipo;
-	}
+    public Usuario(Long id, String nome, String email, String senha, String tipo) {
+        this.id = id;
+        this.nome = nome;
+        this.senha = senha;
+        this.tipo = tipo;
+    }
 
-	// Sobrecarga com construtor vazio, para tirar a obrigatoriedade de
-	// preenchimentos dos atributos
-	public Usuario() {
-	}
+    public Usuario() {
+    }
 
-	/* Getters and Setters */
+    public Long getId() {
+        return this.id;
+    }
 
-	public Long getId() {
-		return this.id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public String getNome() {
+        return this.nome;
+    }
 
-	public String getNome() {
-		return this.nome;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public String getEmail() {
+        return this.email;
+    }
 
-	public String getUsuario() {
-		return this.usuario;
-	}
+    public void setEmail(String usuario) {
+        this.email = usuario;
+    }
 
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
+    public String getSenha() {
+        return this.senha;
+    }
 
-	public String getSenha() {
-		return this.senha;
-	}
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
+    public String getTipo() {
+        return tipo;
+    }
 
-	public String getFoto() {
-		return this.foto;
-	}
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 
-	public void setFoto(String foto) {
-		this.foto = foto;
-	}
+    public List<Carona> getCaronasOferecidas() {
+        return caronasOferecidas;
+    }
 
-	public String getTipo() {
-		return tipo;
-	}
+    public void setCaronasOferecidas(List<Carona> caronasOferecidas) {
+        this.caronasOferecidas = caronasOferecidas;
+    }
 
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
-	}
+    public List<Passagem> getPassagens() {
+        return passagens;
+    }
 
-	public Carona getCarona() {
-		return carona;
-	}
-
-	public void setCarona(Carona carona) {
-		this.carona = carona;
-	}
+    public void setPassagens(List<Passagem> passagens) {
+        this.passagens = passagens;
+    }
 
 }

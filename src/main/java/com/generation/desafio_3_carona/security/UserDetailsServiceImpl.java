@@ -16,19 +16,19 @@ import com.generation.desafio_3_carona.repository.UsuarioRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-	
-	@Autowired
-	private UsuarioRepository usuarioRepository;
 
-	@Override
-	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-		Optional<Usuario> usuario = usuarioRepository.findByUsuario(userName);
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-		if (usuario.isPresent())
-			return new UserDetailsImpl(usuario.get());
-		else
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-			
-	}
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(userName);
+
+        if (usuario.isPresent())
+            return new UserDetailsImpl(usuario.get());
+        else
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+    }
 }

@@ -20,7 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.repository.CaronaRepository;
-import com.generation.desafio_3_carona.repository.ViagemRepository;
+import com.generation.desafio_3_carona.repository.PassagemRepository;
+import com.generation.desafio_3_carona.repository.UsuarioRepository;
 import com.generation.desafio_3_carona.service.RecursoService;
 import jakarta.validation.Valid;
 
@@ -29,82 +30,69 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CaronaController {
 
-	private final RecursoService recursoService;
+    private final RecursoService recursoService;
 
-	@Autowired
-	private CaronaRepository caronaRepository;
+    private final CaronaRepository caronaRepository;
 
-	@Autowired
-	private ViagemRepository viagemRepository;
+    private final UsuarioRepository usuarioRepository;
 
-	CaronaController(RecursoService recursoService) {
-		this.recursoService = recursoService;
-	}
+    private final PassagemRepository passagemRepository;
 
-	@GetMapping
-	public ResponseEntity<List<Carona>> getAll() {
+    CaronaController(RecursoService recursoService, CaronaRepository caronaRepository, UsuarioRepository usuarioRepository, PassagemRepository passagemRepository) {
+        this.recursoService = recursoService;
+        this.caronaRepository = caronaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.passagemRepository = passagemRepository;
+    }
 
-		List<Carona> caronas = caronaRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Carona>> getAll() {
+        return ResponseEntity.ok(caronaRepository.findAll());
+    }
 
-		for (Carona carona : caronas) {
-			recursoService.calcularTempo(carona);
-		}
-		return ResponseEntity.ok(caronas);
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<Carona> getById(@PathVariable Long id) {
+        return caronaRepository.findById(id).map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Carona> getById(@PathVariable Long id) {
+    @GetMapping("/destino/{destino}")
+    public ResponseEntity<List<Carona>> getByDestino(@PathVariable String destino) {
+        List<Carona> caronasEncontradas = caronaRepository.findAllByDestinoContainingIgnoreCase(destino);
+        if (caronasEncontradas.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Destino não encontrado");
+        }
+        return ResponseEntity.ok(caronasEncontradas);
+    }
 
-		Optional<Carona> caronaOptional = caronaRepository.findById(id);
+    @PostMapping
+    public ResponseEntity<Carona> post(@Valid @RequestBody Carona carona) {
+        if (usuarioRepository.existsById(carona.getMotorista().getId())) {
+            recursoService.calcularTempo(carona);
+            return ResponseEntity.status(HttpStatus.CREATED).body(caronaRepository.save(carona));
+        }
 
-		if (caronaOptional.isPresent()) {
-			Carona carona = caronaOptional.get();
-			recursoService.calcularTempo(carona);
-			return ResponseEntity.ok(carona);
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
-	}
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não existe!", null);
+    }
 
-	@GetMapping("/destino/{destino}")
-	public ResponseEntity<List<Carona>> getByDestino(@PathVariable String destino) {
+    @PutMapping
+    public ResponseEntity<Carona> put(@Valid @RequestBody Carona carona) {
+        if (caronaRepository.existsById(carona.getId()) && usuarioRepository.existsById(carona.getMotorista().getId())) {
+            recursoService.calcularTempo(carona);
+            return ResponseEntity.status(HttpStatus.OK).body(caronaRepository.save(carona));
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Carona não existe", null);
+    }
 
-		List<Carona> caronas = caronaRepository.findAllByDestinoContainingIgnoreCase(destino);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        Optional<Carona> carona = caronaRepository.findById(id);
 
-		for (Carona carona : caronas) {
-			recursoService.calcularTempo(carona);
-		}
-		return ResponseEntity.ok(caronas);
-	}
+        if (carona.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
-	@PostMapping
-	public ResponseEntity<Carona> post(@Valid @RequestBody Carona carona) {
-		if (viagemRepository.existsById(carona.getViagem().getId()))
-			return ResponseEntity.status(HttpStatus.CREATED).body(caronaRepository.save(carona));
+        caronaRepository.deleteById(id);
 
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Viagem não existe!", null);
-	}
-
-	@PutMapping
-	public ResponseEntity<Carona> put(@Valid @RequestBody Carona carona) {
-		if (viagemRepository.existsById(carona.getId())) {
-			if (viagemRepository.existsById(carona.getViagem().getId()))
-				return ResponseEntity.status(HttpStatus.OK).body(caronaRepository.save(carona));
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Viagem não existe", null);
-		}
-
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
-
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) {
-		Optional<Carona> carona = caronaRepository.findById(id);
-
-		if (carona.isEmpty())
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-		caronaRepository.deleteById(id);
-
-	}
+    }
 }
