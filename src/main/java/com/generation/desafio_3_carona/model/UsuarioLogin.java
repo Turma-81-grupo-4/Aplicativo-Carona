@@ -4,7 +4,7 @@ public class UsuarioLogin {
 	
 	private Long id;
 	private String nome;
-	private String usuario;
+	private String email;
 	private String senha;
 	private String foto;
 	private String token;
@@ -26,13 +26,7 @@ public class UsuarioLogin {
 		this.nome = nome;
 	}
 
-	public String getUsuario() {
-		return this.usuario;
-	}
 
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
 
 	public String getSenha() {
 		return this.senha;
@@ -66,5 +60,14 @@ public class UsuarioLogin {
 		this.tipo = tipo;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	
 	
 }
