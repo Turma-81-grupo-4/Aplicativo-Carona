@@ -23,12 +23,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class BasicSecurityConfig {
 
-	@Autowired
+    @Autowired
     private JwtAuthFilter authFilter;
 
     @Bean
     UserDetailsService userDetailsService() {
-
         return new UserDetailsServiceImpl();
     }
 
@@ -54,26 +53,28 @@ public class BasicSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    	http
-	        .sessionManagement(management -> management
-	                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-	        		.csrf(csrf -> csrf.disable())
-	        		.cors(withDefaults());
+        http
+                .sessionManagement(management -> management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults());
 
-    	http
-	        .authorizeHttpRequests((auth) -> auth
-	                .requestMatchers("/usuarios/logar").permitAll()
-	                .requestMatchers("/usuarios/cadastrar").permitAll()
-	                .requestMatchers("/error/**").permitAll()
-	                .requestMatchers(HttpMethod.OPTIONS).permitAll()
-	                .anyRequest().authenticated())
-	        .authenticationProvider(authenticationProvider())
-	        .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-	        .httpBasic(withDefaults());
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/usuarios/logar").permitAll()
+                        .requestMatchers("/usuarios/cadastrar").permitAll()
+                        .requestMatchers("/error/**").permitAll()
 
-		return http.build();
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .anyRequest().authenticated())
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(withDefaults());
+
+        return http.build();
 
     }
-
-	
 }

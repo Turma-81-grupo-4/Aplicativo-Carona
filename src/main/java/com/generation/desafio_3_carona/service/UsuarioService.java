@@ -2,6 +2,7 @@ package com.generation.desafio_3_carona.service;
 
 import java.util.Optional;
 import com.generation.desafio_3_carona.dto.UsuarioUpdateDTO;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -78,6 +79,7 @@ public class UsuarioService {
 
         return "Bearer " + jwtService.generateToken(usuario);
     }
+    @Transactional
     public Optional<Usuario> atualizarDadosUsuario(String emailUsuarioLogado, UsuarioUpdateDTO usuarioUpdateDTO) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuarioLogado);
 

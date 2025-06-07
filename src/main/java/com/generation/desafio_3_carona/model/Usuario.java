@@ -4,15 +4,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -41,6 +35,7 @@ public class Usuario {
     @NotBlank
     private String tipo;
 
+    @Column(length = 2000)
     private String foto;
 
     public String getFoto() {
@@ -51,12 +46,12 @@ public class Usuario {
         this.foto = foto;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "motorista", cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties("motorista")
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "motorista", cascade = CascadeType.REMOVE)
     private List<Carona> caronasOferecidas;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passageiro", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("passageiro")
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "passageiro", cascade = CascadeType.ALL)
     private List<Passagem> passagens;
 
     public Usuario(Long id, String nome, String email, String senha, String tipo) {

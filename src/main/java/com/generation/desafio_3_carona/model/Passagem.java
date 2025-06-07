@@ -1,5 +1,6 @@
 package com.generation.desafio_3_carona.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
@@ -42,9 +43,9 @@ public class Passagem {
         this.carona = carona;
     }
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    @JsonIgnoreProperties(value = {"passagens", "carona"}, allowSetters = true)
     private Usuario passageiro;
 
     @ManyToOne

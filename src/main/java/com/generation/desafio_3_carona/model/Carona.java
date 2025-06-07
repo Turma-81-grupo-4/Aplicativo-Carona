@@ -3,6 +3,7 @@ package com.generation.desafio_3_carona.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -49,9 +50,9 @@ public class Carona {
 
 	private double tempoViagem;
 
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
-	@JsonIgnoreProperties({ "carona", "passagens","caronasOferecidas"})
 	private Usuario motorista;
 
 	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
