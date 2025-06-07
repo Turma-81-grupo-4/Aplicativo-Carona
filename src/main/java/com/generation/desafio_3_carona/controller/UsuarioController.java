@@ -74,7 +74,7 @@ public class UsuarioController {
         String username = userDetails.getUsername();
 
 
-        return usuarioService.atualizarNomeUsuario(username, usuarioUpdateDTO.getNome())
+        return usuarioService.atualizarDadosUsuario(username, usuarioUpdateDTO)
                 .map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
