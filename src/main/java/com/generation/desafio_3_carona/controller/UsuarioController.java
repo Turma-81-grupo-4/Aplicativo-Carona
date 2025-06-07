@@ -3,8 +3,11 @@ package com.generation.desafio_3_carona.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.generation.desafio_3_carona.dto.UsuarioUpdateDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,8 +67,14 @@ public class UsuarioController {
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<Usuario> putUsuario(@Valid @RequestBody Usuario usuario) {
-        return usuarioService.atualizarUsuario(usuario)
+    public ResponseEntity<Usuario> atualizarUsuarioLogado(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody UsuarioUpdateDTO usuarioUpdateDTO
+    ) {
+        String username = userDetails.getUsername();
+
+
+        return usuarioService.atualizarNomeUsuario(username, usuarioUpdateDTO.getNome())
                 .map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }

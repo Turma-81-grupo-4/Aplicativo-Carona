@@ -1,5 +1,6 @@
 package com.generation.desafio_3_carona.service;
 
+import java.nio.channels.FileChannel;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,4 +98,17 @@ public class UsuarioService {
         return "Bearer " + jwtService.generateToken(usuario);
     }
 
+    public Optional<Usuario> atualizarNomeUsuario(String email, String novoNome) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+
+        if (usuarioOptional.isPresent()) {
+            Usuario usuarioParaAtualizar = usuarioOptional.get();
+
+            usuarioParaAtualizar.setNome(novoNome);
+
+            return Optional.of(usuarioRepository.save(usuarioParaAtualizar));
+        }
+
+        return Optional.empty();
+    }
 }
