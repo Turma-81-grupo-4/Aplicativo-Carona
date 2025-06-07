@@ -1,15 +1,12 @@
 package com.generation.desafio_3_carona.service;
 
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.generation.desafio_3_carona.dto.UsuarioUpdateDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.desafio_3_carona.model.Usuario;
 import com.generation.desafio_3_carona.model.UsuarioLogin;
@@ -19,14 +16,17 @@ import com.generation.desafio_3_carona.security.JwtService;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.usuarioRepository = usuarioRepository;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+    }
 
     public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
 
@@ -37,24 +37,6 @@ public class UsuarioService {
 
         return Optional.of(usuarioRepository.save(usuario));
 
-    }
-
-    public Optional<Usuario> atualizarUsuario(Usuario usuario) {
-
-        if (usuarioRepository.findById(usuario.getId()).isPresent()) {
-
-            Optional<Usuario> buscarUsuario = usuarioRepository.findByEmail(usuario.getEmail());
-
-            if ((buscarUsuario.isPresent()) && (buscarUsuario.get().getId()) != usuario.getId())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!");
-
-            usuario.setSenha(criptografarSenha(usuario.getSenha()));
-
-            return Optional.ofNullable(usuarioRepository.save(usuario));
-
-        }
-
-        return Optional.empty();
     }
 
     public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin) {
@@ -95,6 +77,24 @@ public class UsuarioService {
     private String gerarToken(String usuario) {
 
         return "Bearer " + jwtService.generateToken(usuario);
+    }
+    public Optional<Usuario> atualizarDadosUsuario(String emailUsuarioLogado, UsuarioUpdateDTO usuarioUpdateDTO) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuarioLogado);
+
+        if (usuarioOptional.isPresent()) {
+            Usuario usuarioExistente = usuarioOptional.get();
+
+            usuarioExistente.setNome(usuarioUpdateDTO.getNome());
+            usuarioExistente.setFoto(usuarioUpdateDTO.getFoto());
+
+            if (usuarioUpdateDTO.getTipo() != null && !usuarioUpdateDTO.getTipo().isEmpty()) {
+                usuarioExistente.setTipo(usuarioUpdateDTO.getTipo());
+            }
+
+            return Optional.of(usuarioRepository.save(usuarioExistente));
+        }
+
+        return Optional.empty();
     }
 
 }

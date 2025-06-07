@@ -41,6 +41,16 @@ public class Usuario {
     @NotBlank
     private String tipo;
 
+    private String foto;
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "motorista", cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("motorista")
     private List<Carona> caronasOferecidas;
