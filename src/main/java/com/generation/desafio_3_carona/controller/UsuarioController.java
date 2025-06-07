@@ -67,12 +67,11 @@ public class UsuarioController {
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<Usuario> atualizarUsuarioLogado(
+    public ResponseEntity<UsuarioUpdateDTO> atualizarUsuarioLogado(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody UsuarioUpdateDTO usuarioUpdateDTO
     ) {
         String username = userDetails.getUsername();
-
 
         return usuarioService.atualizarDadosUsuario(username, usuarioUpdateDTO)
                 .map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))

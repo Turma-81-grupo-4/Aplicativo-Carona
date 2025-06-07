@@ -55,6 +55,7 @@ public class UsuarioService {
 
                 usuarioLogin.get().setId(usuario.get().getId());
                 usuarioLogin.get().setNome(usuario.get().getNome());
+                usuarioLogin.get().setFoto(usuario.get().getFoto());
                 usuarioLogin.get().setTipo(usuario.get().getTipo());
                 usuarioLogin.get().setToken(gerarToken(usuarioLogin.get().getEmail()));
                 usuarioLogin.get().setSenha("");
@@ -80,20 +81,26 @@ public class UsuarioService {
         return "Bearer " + jwtService.generateToken(usuario);
     }
     @Transactional
-    public Optional<Usuario> atualizarDadosUsuario(String emailUsuarioLogado, UsuarioUpdateDTO usuarioUpdateDTO) {
+    public Optional<UsuarioUpdateDTO> atualizarDadosUsuario(String emailUsuarioLogado, UsuarioUpdateDTO usuarioUpdateDTO) {
+
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuarioLogado);
 
         if (usuarioOptional.isPresent()) {
             Usuario usuarioExistente = usuarioOptional.get();
 
-            usuarioExistente.setNome(usuarioUpdateDTO.getNome());
-            usuarioExistente.setFoto(usuarioUpdateDTO.getFoto());
 
-            if (usuarioUpdateDTO.getTipo() != null && !usuarioUpdateDTO.getTipo().isEmpty()) {
-                usuarioExistente.setTipo(usuarioUpdateDTO.getTipo());
-            }
+            String tipoASalvar = (usuarioUpdateDTO.getTipo() != null && !usuarioUpdateDTO.getTipo().isEmpty())
+                    ? usuarioUpdateDTO.getTipo()
+                    : usuarioExistente.getTipo();
 
-            return Optional.of(usuarioRepository.save(usuarioExistente));
+            usuarioRepository.atualizarPerfil(
+                    usuarioExistente.getId(),
+                    usuarioUpdateDTO.getNome(),
+                    usuarioUpdateDTO.getFoto(),
+                    tipoASalvar
+            );
+
+            return Optional.of(usuarioUpdateDTO);
         }
 
         return Optional.empty();
