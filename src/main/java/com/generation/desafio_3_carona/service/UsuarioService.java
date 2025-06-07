@@ -85,7 +85,7 @@ public class UsuarioService {
             Usuario usuarioExistente = usuarioOptional.get();
 
             usuarioExistente.setNome(usuarioUpdateDTO.getNome());
-            //usuarioExistente.setFoto(usuarioUpdateDTO.getFoto());
+            usuarioExistente.setFoto(usuarioUpdateDTO.getFoto());
 
             if (usuarioUpdateDTO.getTipo() != null && !usuarioUpdateDTO.getTipo().isEmpty()) {
                 usuarioExistente.setTipo(usuarioUpdateDTO.getTipo());
