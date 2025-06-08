@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/caronas")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 public class CaronaController {
 
     private final RecursoService recursoService;
