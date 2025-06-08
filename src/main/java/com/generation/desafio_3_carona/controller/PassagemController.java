@@ -1,6 +1,7 @@
 package com.generation.desafio_3_carona.controller;
 
 import com.generation.desafio_3_carona.dto.CaronaDTO;
+import com.generation.desafio_3_carona.dto.PassagemDTO;
 import com.generation.desafio_3_carona.dto.PassagemResponseDTO;
 import com.generation.desafio_3_carona.dto.UsuarioDTO;
 import com.generation.desafio_3_carona.model.Carona;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.generation.desafio_3_carona.service.PassagemService;
 import com.generation.desafio_3_carona.service.RecursoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,18 +32,15 @@ import com.generation.desafio_3_carona.repository.PassagemRepository;
 public class PassagemController {
 
     private final CaronaRepository caronaRepository;
-
     private final UsuarioRepository usuarioRepository;
-
     private final PassagemRepository passagemRepository;
+    private final PassagemService passagemService;
 
-    private final RecursoService recursoService;
-
-    PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository, PassagemRepository passagemRepository, RecursoService recursoService) {
+    PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository, PassagemRepository passagemRepository, RecursoService recursoService, PassagemService passagemService) {
         this.usuarioRepository = usuarioRepository;
         this.caronaRepository = caronaRepository;
         this.passagemRepository = passagemRepository;
-        this.recursoService = recursoService;
+        this.passagemService = passagemService;
     }
 
     @GetMapping
@@ -116,11 +115,13 @@ public class PassagemController {
     }
 
     @PostMapping("/criar")
-    public ResponseEntity<Passagem> criarPassagem(@RequestBody Passagem passagem) {
-        if (usuarioRepository.existsById(passagem.getPassageiro().getId())
-                && caronaRepository.existsById(passagem.getCarona().getId()))
-            return ResponseEntity.status(HttpStatus.CREATED).body(passagemRepository.save(passagem));
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário ou carona não existem!", null);
+    public ResponseEntity<Passagem> criarPassagem(@RequestBody PassagemDTO passagemDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailUsuarioLogado = authentication.getName();
+
+        Passagem novaPassagem = passagemService.criarPassagem(passagemDTO.getCaronaId(), emailUsuarioLogado);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaPassagem);
     }
 
     @PutMapping
@@ -133,10 +134,7 @@ public class PassagemController {
     @DeleteMapping({"/{id}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePassagem(@PathVariable Long id) {
-        Optional<Passagem> passagem = passagemRepository.findById(id);
-        if (passagem.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        passagemRepository.deleteById(id);
+        System.out.println(">>> BACKEND CONTROLLER: Recebido pedido para deletar ID: " + id);
+        passagemService.deletarPassagem(id);
     }
 }

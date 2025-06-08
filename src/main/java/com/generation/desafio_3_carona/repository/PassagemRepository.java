@@ -12,4 +12,5 @@ public interface PassagemRepository extends JpaRepository<Passagem, Long> {
 
     @Query("SELECT p FROM Passagem p WHERE p.passageiro.id = :usuarioId")
     List<Passagem> findAllByUsuarioId(@Param("usuarioId") Long usuarioId);
+    boolean existsByPassageiroIdAndCaronaId(Long passageiroId, Long caronaId);
 }

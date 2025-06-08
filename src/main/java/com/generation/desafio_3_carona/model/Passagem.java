@@ -1,8 +1,6 @@
 package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +17,17 @@ public class Passagem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    @JsonBackReference("usuario_passagens")
+    private Usuario passageiro;
+
+    @ManyToOne
+    @JoinColumn(name = "carona_id")
+    @JsonBackReference("carona_passagens")
+    private Carona carona;
+
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -42,14 +51,4 @@ public class Passagem {
     public void setCarona(Carona carona) {
         this.carona = carona;
     }
-
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario passageiro;
-
-    @ManyToOne
-    @JoinColumn(name = "carona_id")
-    @JsonIgnoreProperties({"passagensVendidasNestaCarona", "usuario"})
-    private Carona carona;
 }

@@ -1,24 +1,10 @@
 package com.generation.desafio_3_carona.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tb_caronas")
@@ -27,37 +13,24 @@ public class Carona {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@NotNull
 	private LocalDate dataViagem;
-
-	@NotBlank
-	@Size(min = 10, max = 255)
 	private String origem;
-
-	@NotBlank
-	@Size(min = 10, max = 255)
 	private String destino;
-
-	@NotNull
 	private int distancia;
-
-	@NotNull
 	private int velocidade;
-
-	@NotNull
 	private int vagas;
-
 	private double tempoViagem;
 
-	@JsonBackReference
+
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
+	@JsonBackReference("usuario_caronas")
 	private Usuario motorista;
 
-	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonIgnoreProperties("carona")
+	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("carona_passagens")
 	private List<Passagem> passagensVendidasNestaCarona;
+
 
 	public List<Passagem> getPassagensVendidasNestaCarona() {
 		return passagensVendidasNestaCarona;
@@ -138,5 +111,4 @@ public class Carona {
 	public void setMotorista(Usuario motorista) {
 		this.motorista = motorista;
 	}
-
 }
