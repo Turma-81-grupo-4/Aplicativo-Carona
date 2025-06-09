@@ -58,7 +58,7 @@ public class CaronaController {
         return ResponseEntity.ok(caronasDto);
     }
 
-     @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CaronaResponseDTO> getById(@PathVariable Long id) {
         return caronaRepository.findById(id)
                 .map(this::convertToDto)
