@@ -120,27 +120,34 @@ public class CaronaController {
     }
 
     @PostMapping
-    public ResponseEntity<Carona> post(@Valid @RequestBody Carona carona) {
+    public ResponseEntity<CaronaResponseDTO> post(@Valid @RequestBody Carona carona) {
         if (usuarioRepository.existsById(carona.getMotorista().getId())) {
             recursoService.calcularTempo(carona);
-            return ResponseEntity.status(HttpStatus.CREATED).body(caronaRepository.save(carona));
+
+            Carona caronaSalva = caronaRepository.save(carona);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(convertToDto(caronaSalva));
         }
 
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não existe!", null);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Carona> put(@PathVariable Long id, @Valid @RequestBody CaronaUpdateDTO caronaUpdateDto) {
+    public ResponseEntity<CaronaResponseDTO> put(@PathVariable Long id, @Valid @RequestBody CaronaUpdateDTO caronaUpdateDto) {
+
+        System.out.println("--- INICIANDO PUT para Carona ID: " + id + " ---");
 
         Carona caronaExistente = caronaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
-
+        System.out.println("1. Carona encontrada no banco de dados.");
 
         String usuarioEmail = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        System.out.println("2. Usuário logado: " + usuarioEmail);
 
         if (!caronaExistente.getMotorista().getEmail().equals(usuarioEmail)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para alterar esta carona.");
         }
+        System.out.println("3. Permissão de usuário verificada com sucesso.");
 
         caronaExistente.setDataViagem(caronaUpdateDto.getDataViagem());
         caronaExistente.setOrigem(caronaUpdateDto.getOrigem());
@@ -148,12 +155,26 @@ public class CaronaController {
         caronaExistente.setDistancia(caronaUpdateDto.getDistancia());
         caronaExistente.setVelocidade(caronaUpdateDto.getVelocidade());
         caronaExistente.setVagas(caronaUpdateDto.getVagas());
+        System.out.println("4. Dados da carona atualizados no objeto 'caronaExistente'.");
 
-        recursoService.calcularTempo(caronaExistente);
+        try {
+            System.out.println("5. PRESTES A CHAMAR recursoService.calcularTempo...");
+            recursoService.calcularTempo(caronaExistente);
+            System.out.println("6. ...CHAMADA a recursoService.calcularTempo CONCLUÍDA.");
+        } catch (Exception e) {
+            System.err.println("!!! ERRO ao chamar recursoService.calcularTempo: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro no cálculo do tempo de viagem.", e);
+        }
 
-        Carona caronaAtualizada = caronaRepository.save(caronaExistente);
+        System.out.println("7. PRESTES A CHAMAR caronaRepository.save...");
+        Carona caronaSalva = caronaRepository.save(caronaExistente);
+        System.out.println("8. ...CHAMADA a caronaRepository.save CONCLUÍDA.");
 
-        return ResponseEntity.ok(caronaAtualizada);
+        CaronaResponseDTO dtoResposta = convertToDto(caronaSalva);
+        System.out.println("9. Resposta DTO criada.");
+
+        System.out.println("--- FIM do PUT com sucesso ---");
+        return ResponseEntity.ok(dtoResposta);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
