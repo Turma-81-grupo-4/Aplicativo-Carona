@@ -8,6 +8,9 @@ public class CaronaDTO {
     private String origem;
     private String destino;
     private UsuarioDTO motorista;
+    private int vagas;
+    private double distancia;
+    private double tempoViagem;
 
     public CaronaDTO() {}
     public CaronaDTO(Long id, LocalDate dataViagem, String origem, String destino, UsuarioDTO motorista) {
@@ -16,6 +19,30 @@ public class CaronaDTO {
         this.origem = origem;
         this.destino = destino;
         this.motorista = motorista;
+    }
+
+    public int getVagas() {
+        return vagas;
+    }
+
+    public void setVagas(int vagas) {
+        this.vagas = vagas;
+    }
+
+    public double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(double distancia) {
+        this.distancia = distancia;
+    }
+
+    public double getTempoViagem() {
+        return tempoViagem;
+    }
+
+    public void setTempoViagem(double tempoViagem) {
+        this.tempoViagem = tempoViagem;
     }
 
     public Long getId() {

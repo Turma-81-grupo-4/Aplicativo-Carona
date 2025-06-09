@@ -2,8 +2,10 @@ package com.generation.desafio_3_carona.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.generation.desafio_3_carona.dto.CaronaResponseDTO;
+import com.generation.desafio_3_carona.dto.PassagemInfoDTO;
 import com.generation.desafio_3_carona.dto.UsuarioDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,11 +51,14 @@ public class CaronaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Carona>> getAll() {
-        return ResponseEntity.ok(caronaRepository.findAll());
+    public ResponseEntity<List<CaronaResponseDTO>> getAll() {
+        List<CaronaResponseDTO> caronasDto = caronaRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(caronasDto);
     }
 
-    @GetMapping("/{id}")
+     @GetMapping("/{id}")
     public ResponseEntity<CaronaResponseDTO> getById(@PathVariable Long id) {
         return caronaRepository.findById(id)
                 .map(this::convertToDto)
@@ -67,11 +72,9 @@ public class CaronaController {
         dto.setDestino(carona.getDestino());
         dto.setVagas(carona.getVagas());
         dto.setDataViagem(carona.getDataViagem());
-        dto.setTempoViagem(carona.getTempoViagem() );
-        dto.setPassagemVendidaNessaCarona(carona.getPassagensVendidasNestaCarona());
+        dto.setTempoViagem(carona.getTempoViagem());
         dto.setDistancia(carona.getDistancia());
         dto.setVelocidade(carona.getVelocidade());
-
 
         if (carona.getMotorista() != null) {
             UsuarioDTO motoristaDto = new UsuarioDTO(
@@ -82,18 +85,38 @@ public class CaronaController {
             dto.setMotorista(motoristaDto);
         }
 
-        dto.setPassagemVendidaNessaCarona(carona.getPassagensVendidasNestaCarona());
+        if (carona.getPassagensVendidasNestaCarona() != null) {
+            List<PassagemInfoDTO> passagensInfo = carona.getPassagensVendidasNestaCarona().stream()
+                    .map(passagem -> {
+                        UsuarioDTO passageiroDto = null;
+                        if (passagem.getPassageiro() != null) {
+                            passageiroDto = new UsuarioDTO(
+                                    passagem.getPassageiro().getId(),
+                                    passagem.getPassageiro().getNome(),
+                                    passagem.getPassageiro().getFoto()
+                            );
+                        }
+                        return new PassagemInfoDTO(passagem.getId(), passageiroDto);
+                    })
+                    .collect(Collectors.toList());
+            dto.setPassagemVendidaNessaCarona(passagensInfo);
+        }
 
         return dto;
     }
 
     @GetMapping("/destino/{destino}")
-    public ResponseEntity<List<Carona>> getByDestino(@PathVariable String destino) {
+    public ResponseEntity<List<CaronaResponseDTO>> getByDestino(@PathVariable String destino) {
         List<Carona> caronasEncontradas = caronaRepository.findAllByDestinoContainingIgnoreCase(destino);
         if (caronasEncontradas.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Destino não encontrado");
         }
-        return ResponseEntity.ok(caronasEncontradas);
+
+        List<CaronaResponseDTO> caronasDto = caronasEncontradas.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(caronasDto);
     }
 
     @PostMapping

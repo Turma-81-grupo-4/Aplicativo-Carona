@@ -12,7 +12,7 @@ public class CaronaResponseDTO {
     private int vagas;
     private double tempoViagem;
     private UsuarioDTO motorista;
-    private List<Passagem> passagemVendidaNessaCarona;
+    private List<PassagemInfoDTO> passagemVendidaNessaCarona;
     private double distancia;
     private int velocidade;
 
@@ -88,11 +88,11 @@ public class CaronaResponseDTO {
         this.motorista = motorista;
     }
 
-    public List<Passagem> getPassagemVendidaNessaCarona() {
+    public List<PassagemInfoDTO> getPassagemVendidaNessaCarona() {
         return passagemVendidaNessaCarona;
     }
 
-    public void setPassagemVendidaNessaCarona(List<Passagem> passagemVendidaNessaCarona) {
+    public void setPassagemVendidaNessaCarona(List<PassagemInfoDTO> passagemVendidaNessaCarona) {
         this.passagemVendidaNessaCarona = passagemVendidaNessaCarona;
     }
 }
