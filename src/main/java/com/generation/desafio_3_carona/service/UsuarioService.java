@@ -40,33 +40,41 @@ public class UsuarioService {
 
     }
 
-    public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin) {
+    public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLoginOptional) {
 
-        var credenciais = new UsernamePasswordAuthenticationToken(usuarioLogin.get().getEmail(),
-                usuarioLogin.get().getSenha());
+        var credenciais = new UsernamePasswordAuthenticationToken(
+                usuarioLoginOptional.get().getEmail(),
+                usuarioLoginOptional.get().getSenha()
+        );
 
         Authentication authentication = authenticationManager.authenticate(credenciais);
 
         if (authentication.isAuthenticated()) {
 
-            Optional<Usuario> usuario = usuarioRepository.findByEmail(usuarioLogin.get().getEmail());
 
-            if (usuario.isPresent()) {
+            Optional<Usuario> usuario = usuarioRepository.findByEmail(usuarioLoginOptional.get().getEmail());
 
-                usuarioLogin.get().setId(usuario.get().getId());
-                usuarioLogin.get().setNome(usuario.get().getNome());
-                usuarioLogin.get().setFoto(usuario.get().getFoto());
-                usuarioLogin.get().setTipo(usuario.get().getTipo());
-                usuarioLogin.get().setToken(gerarToken(usuarioLogin.get().getEmail()));
-                usuarioLogin.get().setSenha("");
+            if(usuario.isPresent()){
 
-                return usuarioLogin;
+                UsuarioLogin usuarioLoginResponse = new UsuarioLogin();
+
+                usuarioLoginResponse.setId(usuario.get().getId());
+                usuarioLoginResponse.setNome(usuario.get().getNome());
+                usuarioLoginResponse.setEmail(usuario.get().getEmail());
+                usuarioLoginResponse.setFoto(usuario.get().getFoto());
+                usuarioLoginResponse.setTipo(usuario.get().getTipo());
+
+
+                String token = gerarToken(usuarioLoginOptional.get().getEmail());
+
+                usuarioLoginResponse.setToken(token);
+
+                return Optional.of(usuarioLoginResponse);
             }
 
         }
 
         return Optional.empty();
-
     }
 
     private String criptografarSenha(String senha) {

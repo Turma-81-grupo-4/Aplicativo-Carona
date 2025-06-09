@@ -3,6 +3,8 @@ package com.generation.desafio_3_carona.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,11 +15,24 @@ public class Carona {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@FutureOrPresent(message = "A data da viagem não pode ser no passado.")
 	private LocalDate dataViagem;
+
+	@NotBlank(message = "O campo origem é obrigatório.")
+	@Size(min = 10, max = 255, message = "O campo origem deve ter entre 10 e 255 caracteres.")
 	private String origem;
+
+	@NotBlank(message = "O campo destino é obrigatório.")
+	@Size(min = 10, max = 255, message = "O campo destino deve ter entre 10 e 255 caracteres.")
 	private String destino;
+
+	@Min(value = 1, message = "A distância deve ser de no mínimo 1 km.")
 	private int distancia;
+
+	@Min(value = 1, message = "A velocidade média deve ser maior que zero.")
 	private int velocidade;
+
+	@Min(value = 1, message = "O número de vagas deve ser no mínimo 1.")
 	private int vagas;
 	private double tempoViagem;
 
@@ -25,6 +40,7 @@ public class Carona {
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
 	@JsonBackReference("usuario_caronas")
+	@NotNull(message = "O motorista é obrigatório.")
 	private Usuario motorista;
 
 	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, orphanRemoval = true)
