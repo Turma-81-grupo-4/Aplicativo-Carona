@@ -26,6 +26,7 @@ public class PassagemService {
         this.caronaRepository = caronaRepository;
     }
 
+    @Transactional
     public Passagem criarPassagem(Long caronaId, String emailUsuarioLogado) {
         Usuario passageiro = usuarioRepository.findByEmail(emailUsuarioLogado)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não encontrado."));
@@ -41,20 +42,30 @@ public class PassagemService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Você já comprou uma passagem para esta carona.");
         }
 
-        Passagem novaPassagem = new Passagem();
+        if (carona.getVagas() <= 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Vagas para esta carona estão esgotadas!");
+        }
+        carona.setVagas(carona.getVagas() - 1);
+
+            Passagem novaPassagem = new Passagem();
         novaPassagem.setCarona(carona);
         novaPassagem.setPassageiro(passageiro);
 
         return passagemRepository.save(novaPassagem);
     }
-@Transactional
+    @Transactional
     public void deletarPassagem(Long id) {
-    System.out.println(">>> BACKEND SERVICE: Verificando existência do ID: " + id);
-        if(!passagemRepository.existsById(id)){
-            System.out.println(">>> BACKEND SERVICE: ID " + id + " NÃO ENCONTRADO! Lançando erro 404.");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Passagem não encontrada!");
-        }
-    System.out.println(">>> BACKEND SERVICE: ID " + id + " encontrado. Deletando...");
+
+        Passagem passagem = passagemRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passagem não encontrada!"));
+
+        Carona carona = passagem.getCarona();
+
+        carona.setVagas(carona.getVagas() + 1);
+
+
+        caronaRepository.save(carona);
+
         passagemRepository.deleteById(id);
     }
 }
