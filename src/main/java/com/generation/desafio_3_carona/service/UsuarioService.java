@@ -2,6 +2,7 @@ package com.generation.desafio_3_carona.service;
 
 import java.util.Optional;
 import com.generation.desafio_3_carona.dto.UsuarioUpdateDTO;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,32 +40,41 @@ public class UsuarioService {
 
     }
 
-    public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin) {
+    public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLoginOptional) {
 
-        var credenciais = new UsernamePasswordAuthenticationToken(usuarioLogin.get().getEmail(),
-                usuarioLogin.get().getSenha());
+        var credenciais = new UsernamePasswordAuthenticationToken(
+                usuarioLoginOptional.get().getEmail(),
+                usuarioLoginOptional.get().getSenha()
+        );
 
         Authentication authentication = authenticationManager.authenticate(credenciais);
 
         if (authentication.isAuthenticated()) {
 
-            Optional<Usuario> usuario = usuarioRepository.findByEmail(usuarioLogin.get().getEmail());
 
-            if (usuario.isPresent()) {
+            Optional<Usuario> usuario = usuarioRepository.findByEmail(usuarioLoginOptional.get().getEmail());
 
-                usuarioLogin.get().setId(usuario.get().getId());
-                usuarioLogin.get().setNome(usuario.get().getNome());
-                usuarioLogin.get().setTipo(usuario.get().getTipo());
-                usuarioLogin.get().setToken(gerarToken(usuarioLogin.get().getEmail()));
-                usuarioLogin.get().setSenha("");
+            if(usuario.isPresent()){
 
-                return usuarioLogin;
+                UsuarioLogin usuarioLoginResponse = new UsuarioLogin();
+
+                usuarioLoginResponse.setId(usuario.get().getId());
+                usuarioLoginResponse.setNome(usuario.get().getNome());
+                usuarioLoginResponse.setEmail(usuario.get().getEmail());
+                usuarioLoginResponse.setFoto(usuario.get().getFoto());
+                usuarioLoginResponse.setTipo(usuario.get().getTipo());
+
+
+                String token = gerarToken(usuarioLoginOptional.get().getEmail());
+
+                usuarioLoginResponse.setToken(token);
+
+                return Optional.of(usuarioLoginResponse);
             }
 
         }
 
         return Optional.empty();
-
     }
 
     private String criptografarSenha(String senha) {
@@ -78,20 +88,27 @@ public class UsuarioService {
 
         return "Bearer " + jwtService.generateToken(usuario);
     }
-    public Optional<Usuario> atualizarDadosUsuario(String emailUsuarioLogado, UsuarioUpdateDTO usuarioUpdateDTO) {
+    @Transactional
+    public Optional<UsuarioUpdateDTO> atualizarDadosUsuario(String emailUsuarioLogado, UsuarioUpdateDTO usuarioUpdateDTO) {
+
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuarioLogado);
 
         if (usuarioOptional.isPresent()) {
             Usuario usuarioExistente = usuarioOptional.get();
 
-            usuarioExistente.setNome(usuarioUpdateDTO.getNome());
-            usuarioExistente.setFoto(usuarioUpdateDTO.getFoto());
 
-            if (usuarioUpdateDTO.getTipo() != null && !usuarioUpdateDTO.getTipo().isEmpty()) {
-                usuarioExistente.setTipo(usuarioUpdateDTO.getTipo());
-            }
+            String tipoASalvar = (usuarioUpdateDTO.getTipo() != null && !usuarioUpdateDTO.getTipo().isEmpty())
+                    ? usuarioUpdateDTO.getTipo()
+                    : usuarioExistente.getTipo();
 
-            return Optional.of(usuarioRepository.save(usuarioExistente));
+            usuarioRepository.atualizarPerfil(
+                    usuarioExistente.getId(),
+                    usuarioUpdateDTO.getNome(),
+                    usuarioUpdateDTO.getFoto(),
+                    tipoASalvar
+            );
+
+            return Optional.of(usuarioUpdateDTO);
         }
 
         return Optional.empty();

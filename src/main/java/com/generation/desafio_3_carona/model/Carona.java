@@ -1,23 +1,12 @@
 package com.generation.desafio_3_carona.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tb_caronas")
@@ -26,37 +15,38 @@ public class Carona {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@NotNull
+	@FutureOrPresent(message = "A data da viagem não pode ser no passado.")
 	private LocalDate dataViagem;
 
-	@NotBlank
-	@Size(min = 10, max = 255)
+	@NotBlank(message = "O campo origem é obrigatório.")
+	@Size(min = 10, max = 255, message = "O campo origem deve ter entre 10 e 255 caracteres.")
 	private String origem;
 
-	@NotBlank
-	@Size(min = 10, max = 255)
+	@NotBlank(message = "O campo destino é obrigatório.")
+	@Size(min = 10, max = 255, message = "O campo destino deve ter entre 10 e 255 caracteres.")
 	private String destino;
 
-	@NotNull
+	@Min(value = 1, message = "A distância deve ser de no mínimo 1 km.")
 	private int distancia;
 
-	@NotNull
+	@Min(value = 1, message = "A velocidade média deve ser maior que zero.")
 	private int velocidade;
 
-	@NotNull
+	@Min(value = 1, message = "O número de vagas deve ser no mínimo 1.")
 	private int vagas;
-
 	private double tempoViagem;
+
 
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
-	@JsonIgnoreProperties({ "carona", "passagens","caronasOferecidas"})
+	@JsonBackReference("usuario_caronas")
+	@NotNull(message = "O motorista é obrigatório.")
 	private Usuario motorista;
 
-	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonIgnoreProperties("carona")
+	@OneToMany(mappedBy = "carona", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("carona_passagens")
 	private List<Passagem> passagensVendidasNestaCarona;
+
 
 	public List<Passagem> getPassagensVendidasNestaCarona() {
 		return passagensVendidasNestaCarona;
@@ -137,5 +127,4 @@ public class Carona {
 	public void setMotorista(Usuario motorista) {
 		this.motorista = motorista;
 	}
-
 }

@@ -1,22 +1,8 @@
 package com.generation.desafio_3_carona.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tb_usuarios")
@@ -25,38 +11,20 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull(message = "O Atributo Nome é Obrigatório!")
     private String nome;
-
-    @Schema(example = "email@email.com")
-    @NotNull(message = "O atributo E-mail é obrigatório!")
-    @Email(message = "O atributo E-mail deve ser um email válido!")
     private String email;
-
-    @NotBlank(message = "O atributo Senha é obrigatório!")
-    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     private String senha;
-
-    @NotBlank
     private String tipo;
-
+    @Column(length = 2000)
     private String foto;
 
-    public String getFoto() {
-        return foto;
-    }
 
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "motorista", cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties("motorista")
+    @OneToMany(mappedBy = "motorista", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("usuario_caronas")
     private List<Carona> caronasOferecidas;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passageiro", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("passageiro")
+    @OneToMany(mappedBy = "passageiro", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("usuario_passagens")
     private List<Passagem> passagens;
 
     public Usuario(Long id, String nome, String email, String senha, String tipo) {
@@ -110,6 +78,14 @@ public class Usuario {
         this.tipo = tipo;
     }
 
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
     public List<Carona> getCaronasOferecidas() {
         return caronasOferecidas;
     }
@@ -125,5 +101,4 @@ public class Usuario {
     public void setPassagens(List<Passagem> passagens) {
         this.passagens = passagens;
     }
-
 }
