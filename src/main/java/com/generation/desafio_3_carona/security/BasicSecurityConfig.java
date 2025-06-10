@@ -54,53 +54,65 @@ public class BasicSecurityConfig {
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:5173",
-        		"https://carona-nu.vercel.app",
-        		"https://carona-grupo-4-java-81s-projects.vercel.app"
-        		));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://carona-nu.vercel.app",
+                "https://carona-grupo-4-java-81s-projects.vercel.app",
+                "https://aplicativo-carona-2.onrender.com" // Adicione o próprio domínio do backend se ele também for um frontend
+        ));
 
         configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT"));
 
-        configuration.setAllowedHeaders(List.of("*"));
-
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("*")); // Permite todos os cabeçalhos
+        configuration.setAllowCredentials(true); // Importante se você estiver enviando cookies ou headers de autenticação como Authorization
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Aplica a configuração CORS para todas as rotas
 
         return source;
     }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .sessionManagement(management -> management
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(csrf -> csrf.disable())
-                .cors(withDefaults());
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Requerido para JWT
+                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs REST
+                .cors(withDefaults()) // Aplica a configuração CORS que você definiu no Bean 'corsConfigurationSource()'
+                // .httpBasic(withDefaults()) // Comentar ou remover se você usa apenas autenticação JWT
+                ;
 
         http
                 .authorizeHttpRequests((auth) -> auth
+                        // Permite requisições OPTIONS antes de qualquer outra validação
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll() // Mova para o início para garantir que seja processado primeiro
+
+                        // Rotas públicas que não requerem autenticação
                         .requestMatchers("/usuarios/logar").permitAll()
                         .requestMatchers("/usuarios/cadastrar").permitAll()
                         .requestMatchers("/error/**").permitAll()
 
+                        // Rotas do Swagger UI
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll() // Pode ser necessário para Swagger
+                        .requestMatchers("/webjars/**").permitAll() // Pode ser necessário para Swagger
 
-                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        // Todas as outras requisições requerem autenticação
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(withDefaults());
+                ; // Não adicione .httpBasic(withDefaults()) se você usa apenas JWT
+                  // O Basic Auth pode causar conflito ou pedir credenciais para OPTIONS
 
         return http.build();
-
     }
 }
