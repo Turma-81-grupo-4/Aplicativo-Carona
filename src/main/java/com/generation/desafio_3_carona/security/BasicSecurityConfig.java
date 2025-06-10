@@ -59,7 +59,10 @@ public class BasicSecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173",
+        		"https://carona-nu.vercel.app",
+        		"https://carona-grupo-4-java-81s-projects.vercel.app"
+        		));
 
         configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT"));
 
