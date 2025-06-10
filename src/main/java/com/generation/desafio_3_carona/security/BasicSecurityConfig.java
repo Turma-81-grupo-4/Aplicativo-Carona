@@ -54,24 +54,27 @@ public class BasicSecurityConfig {
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "https://carona-nu.vercel.app",
-                "https://carona-grupo-4-java-81s-projects.vercel.app",
-                "https://aplicativo-carona-2.onrender.com"
-        ));
+
+        configuration.setAllowedOrigins(List.of("http://localhost:5173",
+        		"https://carona-nu.vercel.app",
+        		"https://carona-grupo-4-java-81s-projects.vercel.app"));
+
         configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT"));
+
         configuration.setAllowedHeaders(List.of("*"));
+
         configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -83,36 +86,20 @@ public class BasicSecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        // 1. Permite requisições OPTIONS para TODAS as rotas (CRUCIAL para CORS preflight)
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // 2. Permite acesso à raiz (se houver um controlador ou se o Swagger for redirecionado)
-                        .requestMatchers(HttpMethod.GET, "/").permitAll() // Adicionado/Modificado
-
-                        // 3. Rotas do Swagger UI e documentação (colocadas logo após a raiz e OPTIONS)
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-resources/**").permitAll()
-                        .requestMatchers("/webjars/**").permitAll()
-
-                        // 4. Rotas públicas de autenticação/cadastro
                         .requestMatchers("/usuarios/logar").permitAll()
                         .requestMatchers("/usuarios/cadastrar").permitAll()
                         .requestMatchers("/error/**").permitAll()
 
-                        // 5. Outras rotas GET que devem ser públicas ANTES do login (ex: listar caronas)
-                        .requestMatchers(HttpMethod.GET, "/caronas").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/caronas/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/caronas/destino/{destino}").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
 
-                        // 6. Todas as outras requisições requerem autenticação (DEVE SER A ÚLTIMA REGRA)
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                // Certifique-se de que httpBasic(withDefaults()) está ausente ou definitivamente comentado.
-        ;
+                .httpBasic(withDefaults());
 
         return http.build();
+
     }
 }
