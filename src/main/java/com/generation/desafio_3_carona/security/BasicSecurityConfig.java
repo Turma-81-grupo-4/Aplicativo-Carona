@@ -57,25 +57,18 @@ public class BasicSecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration configuration = new CorsConfiguration();
-
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "https://carona-nu.vercel.app",
                 "https://carona-grupo-4-java-81s-projects.vercel.app",
-                "https://aplicativo-carona-2.onrender.com" // Adicione o próprio domínio do backend se ele também for um frontend
+                "https://aplicativo-carona-2.onrender.com"
         ));
-
         configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT"));
-
-        configuration.setAllowedHeaders(List.of("*")); // Permite todos os cabeçalhos
-        configuration.setAllowCredentials(true); // Importante se você estiver enviando cookies ou headers de autenticação como Authorization
-
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**", configuration); // Aplica a configuração CORS para todas as rotas
-
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -84,34 +77,41 @@ public class BasicSecurityConfig {
 
         http
                 .sessionManagement(management -> management
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Requerido para JWT
-                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs REST
-                .cors(withDefaults()) // Aplica a configuração CORS que você definiu no Bean 'corsConfigurationSource()'
-                // .httpBasic(withDefaults()) // Comentar ou remover se você usa apenas autenticação JWT
-                ;
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults());
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        // Permite requisições OPTIONS antes de qualquer outra validação
-                        .requestMatchers(HttpMethod.OPTIONS).permitAll() // Mova para o início para garantir que seja processado primeiro
+                        // 1. Permite requisições OPTIONS para TODAS as rotas (CRUCIAL para CORS preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Rotas públicas que não requerem autenticação
+                        // 2. Permite acesso à raiz (se houver um controlador ou se o Swagger for redirecionado)
+                        .requestMatchers(HttpMethod.GET, "/").permitAll() // Adicionado/Modificado
+
+                        // 3. Rotas do Swagger UI e documentação (colocadas logo após a raiz e OPTIONS)
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+
+                        // 4. Rotas públicas de autenticação/cadastro
                         .requestMatchers("/usuarios/logar").permitAll()
                         .requestMatchers("/usuarios/cadastrar").permitAll()
                         .requestMatchers("/error/**").permitAll()
 
-                        // Rotas do Swagger UI
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-resources/**").permitAll() // Pode ser necessário para Swagger
-                        .requestMatchers("/webjars/**").permitAll() // Pode ser necessário para Swagger
+                        // 5. Outras rotas GET que devem ser públicas ANTES do login (ex: listar caronas)
+                        .requestMatchers(HttpMethod.GET, "/caronas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/caronas/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/caronas/destino/{destino}").permitAll()
 
-                        // Todas as outras requisições requerem autenticação
-                        .anyRequest().authenticated())
+                        // 6. Todas as outras requisições requerem autenticação (DEVE SER A ÚLTIMA REGRA)
+                        .anyRequest().authenticated()
+                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                ; // Não adicione .httpBasic(withDefaults()) se você usa apenas JWT
-                  // O Basic Auth pode causar conflito ou pedir credenciais para OPTIONS
+                // Certifique-se de que httpBasic(withDefaults()) está ausente ou definitivamente comentado.
+        ;
 
         return http.build();
     }
