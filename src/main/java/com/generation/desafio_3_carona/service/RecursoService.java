@@ -9,7 +9,7 @@ import com.generation.desafio_3_carona.model.Usuario;
 public class RecursoService {
 	public void calcularTempo(Carona carona) {
 		int velocidade = carona.getVelocidade();
-		int distancia = carona.getDistancia();
+		int distancia = carona.getDistanciaKm();
 		if (velocidade > 0) {
 			carona.setTempoViagem((double) distancia / velocidade);
 		} else {

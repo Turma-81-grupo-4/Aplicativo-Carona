@@ -1,13 +1,13 @@
 package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.generation.desafio_3_carona.model.enums.StatusPassagem;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_passagens")
@@ -26,8 +26,12 @@ public class Passagem {
     @JoinColumn(name = "carona_id")
     @JsonBackReference("carona_passagens")
     private Carona carona;
+@CreationTimestamp
+    private LocalDateTime dataReserva;
+@NotNull
+@Enumerated
+    private StatusPassagem status;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -50,5 +54,21 @@ public class Passagem {
 
     public void setCarona(Carona carona) {
         this.carona = carona;
+    }
+
+    public LocalDateTime getDataReserva() {
+        return dataReserva;
+    }
+
+    public void setDataReserva(LocalDateTime dataReserva) {
+        this.dataReserva = dataReserva;
+    }
+
+    public StatusPassagem getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusPassagem status) {
+        this.status = status;
     }
 }

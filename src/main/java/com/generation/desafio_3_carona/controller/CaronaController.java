@@ -73,7 +73,7 @@ public class CaronaController {
         dto.setVagas(carona.getVagas());
         dto.setDataViagem(carona.getDataViagem());
         dto.setTempoViagem(carona.getTempoViagem());
-        dto.setDistancia(carona.getDistancia());
+        dto.setDistancia(carona.getDistanciaKm());
         dto.setVelocidade(carona.getVelocidade());
 
         if (carona.getMotorista() != null) {
@@ -145,7 +145,7 @@ public class CaronaController {
         caronaExistente.setDataViagem(caronaUpdateDto.getDataViagem());
         caronaExistente.setOrigem(caronaUpdateDto.getOrigem());
         caronaExistente.setDestino(caronaUpdateDto.getDestino());
-        caronaExistente.setDistancia(caronaUpdateDto.getDistancia());
+        caronaExistente.setDistanciaKm(caronaUpdateDto.getDistancia());
         caronaExistente.setVelocidade(caronaUpdateDto.getVelocidade());
         caronaExistente.setVagas(caronaUpdateDto.getVagas());
 

@@ -2,10 +2,12 @@ package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.generation.desafio_3_carona.model.enums.StatusCarona;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,25 +18,33 @@ public class Carona {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@FutureOrPresent(message = "A data da viagem não pode ser no passado.")
-	private LocalDate dataViagem;
+	private LocalDateTime dataHoraPartida;
+
+	private LocalDateTime dataHoraChegada;
 
 	@NotBlank(message = "O campo origem é obrigatório.")
-	@Size(min = 10, max = 255, message = "O campo origem deve ter entre 10 e 255 caracteres.")
 	private String origem;
 
 	@NotBlank(message = "O campo destino é obrigatório.")
-	@Size(min = 10, max = 255, message = "O campo destino deve ter entre 10 e 255 caracteres.")
 	private String destino;
 
-	@Min(value = 1, message = "A distância deve ser de no mínimo 1 km.")
-	private int distancia;
+	@Positive( message = "A distância deve ser de no mínimo 1 km.")
+	private Integer distanciaKm;
 
 	@Min(value = 1, message = "A velocidade média deve ser maior que zero.")
 	private int velocidade;
 
-	@Min(value = 1, message = "O número de vagas deve ser no mínimo 1.")
+	@Positive( message = "O número de vagas deve ser no mínimo 1.")
 	private int vagas;
 	private double tempoViagem;
+
+	@NotNull(message = "O valor por passageiro é obrigatório")
+	@DecimalMin(value = "0.0", inclusive = false)
+	private BigDecimal valorPorPassageiro;
+
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private StatusCarona statusCarona;
 
 
 	@ManyToOne
@@ -47,6 +57,12 @@ public class Carona {
 	@JsonManagedReference("carona_passagens")
 	private List<Passagem> passagensVendidasNestaCarona;
 
+	@PrePersist
+	public void prePersist() {
+		if (this.statusCarona == null) {
+			this.statusCarona = StatusCarona.AGENDADA;
+		}
+	}
 
 	public List<Passagem> getPassagensVendidasNestaCarona() {
 		return passagensVendidasNestaCarona;
@@ -62,14 +78,6 @@ public class Carona {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public LocalDate getDataViagem() {
-		return dataViagem;
-	}
-
-	public void setDataViagem(LocalDate dataViagem) {
-		this.dataViagem = dataViagem;
 	}
 
 	public String getOrigem() {
@@ -88,12 +96,12 @@ public class Carona {
 		this.destino = destino;
 	}
 
-	public int getDistancia() {
-		return distancia;
+	public int getDistanciaKm() {
+		return distanciaKm;
 	}
 
-	public void setDistancia(int distancia) {
-		this.distancia = distancia;
+	public void setDistanciaKm(int distanciaKm) {
+		this.distanciaKm = distanciaKm;
 	}
 
 	public int getVelocidade() {
@@ -126,5 +134,41 @@ public class Carona {
 
 	public void setMotorista(Usuario motorista) {
 		this.motorista = motorista;
+	}
+
+	public LocalDateTime getDataHoraPartida() {
+		return dataHoraPartida;
+	}
+
+	public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+		this.dataHoraPartida = dataHoraPartida;
+	}
+
+	public LocalDateTime getDataHoraChegada() {
+		return dataHoraChegada;
+	}
+
+	public void setDataHoraChegada(LocalDateTime dataHoraChegada) {
+		this.dataHoraChegada = dataHoraChegada;
+	}
+
+	public void setDistanciaKm(Integer distanciaKm) {
+		this.distanciaKm = distanciaKm;
+	}
+
+	public BigDecimal getValorPorPassageiro() {
+		return valorPorPassageiro;
+	}
+
+	public void setValorPorPassageiro(BigDecimal valorPorPassageiro) {
+		this.valorPorPassageiro = valorPorPassageiro;
+	}
+
+	public StatusCarona getStatusCarona() {
+		return statusCarona;
+	}
+
+	public void setStatusCarona(StatusCarona statusCarona) {
+		this.statusCarona = statusCarona;
 	}
 }

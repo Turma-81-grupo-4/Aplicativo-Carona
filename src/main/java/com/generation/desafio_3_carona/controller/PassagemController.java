@@ -93,7 +93,7 @@ public class PassagemController {
             caronaDTO.setDestino(carona.getDestino());
             caronaDTO.setDataViagem(carona.getDataViagem());
             caronaDTO.setVagas(carona.getVagas());
-            caronaDTO.setDistancia(carona.getDistancia());
+            caronaDTO.setDistancia(carona.getDistanciaKm());
             caronaDTO.setTempoViagem(carona.getTempoViagem());
 
 
