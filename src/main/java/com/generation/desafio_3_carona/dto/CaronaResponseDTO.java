@@ -1,20 +1,27 @@
 package com.generation.desafio_3_carona.dto;
 
 import com.generation.desafio_3_carona.model.Passagem;
+import com.generation.desafio_3_carona.model.enums.StatusCarona;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CaronaResponseDTO {
-    private Long id;
-    private LocalDate dataViagem;
-    private String origem;
-    private String destino;
-    private int vagas;
-    private double tempoViagem;
-    private UsuarioDTO motorista;
-    private List<PassagemInfoDTO> passagemVendidaNessaCarona;
-    private double distancia;
-    private int velocidade;
+        private Long id;
+        private String origem;
+        private String destino;
+        private int vagas;
+        private LocalDateTime dataHoraPartida;
+        private LocalDateTime dataHoraChegada;
+        private double tempoViagem;
+        private Integer distanciaKm;
+        private int velocidade;
+        private BigDecimal valorPorPassageiro;
+        private StatusCarona statusCarona;
+        private UsuarioDTO motorista;
+        private List<PassagemInfoDTO> passagensVendidas; // Renomeado para clareza
 
     public Long getId() {
         return id;
@@ -22,30 +29,6 @@ public class CaronaResponseDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public double getDistancia() {
-        return distancia;
-    }
-
-    public void setDistancia(double distancia) {
-        this.distancia = distancia;
-    }
-
-    public int getVelocidade() {
-        return velocidade;
-    }
-
-    public void setVelocidade(int velocidade) {
-        this.velocidade = velocidade;
-    }
-
-    public LocalDate getDataViagem() {
-        return dataViagem;
-    }
-
-    public void setDataViagem(LocalDate dataViagem) {
-        this.dataViagem = dataViagem;
     }
 
     public String getOrigem() {
@@ -72,12 +55,60 @@ public class CaronaResponseDTO {
         this.vagas = vagas;
     }
 
+    public LocalDateTime getDataHoraPartida() {
+        return dataHoraPartida;
+    }
+
+    public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+        this.dataHoraPartida = dataHoraPartida;
+    }
+
+    public LocalDateTime getDataHoraChegada() {
+        return dataHoraChegada;
+    }
+
+    public void setDataHoraChegada(LocalDateTime dataHoraChegada) {
+        this.dataHoraChegada = dataHoraChegada;
+    }
+
     public double getTempoViagem() {
         return tempoViagem;
     }
 
     public void setTempoViagem(double tempoViagem) {
         this.tempoViagem = tempoViagem;
+    }
+
+    public Integer getDistanciaKm() {
+        return distanciaKm;
+    }
+
+    public void setDistanciaKm(Integer distanciaKm) {
+        this.distanciaKm = distanciaKm;
+    }
+
+    public int getVelocidade() {
+        return velocidade;
+    }
+
+    public void setVelocidade(int velocidade) {
+        this.velocidade = velocidade;
+    }
+
+    public BigDecimal getValorPorPassageiro() {
+        return valorPorPassageiro;
+    }
+
+    public void setValorPorPassageiro(BigDecimal valorPorPassageiro) {
+        this.valorPorPassageiro = valorPorPassageiro;
+    }
+
+    public StatusCarona getStatusCarona() {
+        return statusCarona;
+    }
+
+    public void setStatusCarona(StatusCarona statusCarona) {
+        this.statusCarona = statusCarona;
     }
 
     public UsuarioDTO getMotorista() {
@@ -88,11 +119,11 @@ public class CaronaResponseDTO {
         this.motorista = motorista;
     }
 
-    public List<PassagemInfoDTO> getPassagemVendidaNessaCarona() {
-        return passagemVendidaNessaCarona;
+    public List<PassagemInfoDTO> getPassagensVendidas() {
+        return passagensVendidas;
     }
 
-    public void setPassagemVendidaNessaCarona(List<PassagemInfoDTO> passagemVendidaNessaCarona) {
-        this.passagemVendidaNessaCarona = passagemVendidaNessaCarona;
+    public void setPassagensVendidas(List<PassagemInfoDTO> passagensVendidas) {
+        this.passagensVendidas = passagensVendidas;
     }
 }

@@ -1,6 +1,7 @@
 package com.generation.desafio_3_carona.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CaronaDTO {
     private Long id;
@@ -83,5 +84,9 @@ public class CaronaDTO {
 
     public void setMotorista(UsuarioDTO motorista) {
         this.motorista = motorista;
+    }
+
+    public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+
     }
 }

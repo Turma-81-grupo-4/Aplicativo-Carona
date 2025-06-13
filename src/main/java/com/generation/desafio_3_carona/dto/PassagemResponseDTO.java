@@ -3,7 +3,7 @@ package com.generation.desafio_3_carona.dto;
 public class PassagemResponseDTO {
     private Long id;
     private UsuarioDTO passageiro;
-    private CaronaDTO carona;
+    private CaronaResponseDTO carona;
 
     public PassagemResponseDTO() {}
 
@@ -11,6 +11,6 @@ public class PassagemResponseDTO {
     public void setId(Long id) { this.id = id; }
     public UsuarioDTO getPassageiro() { return passageiro; }
     public void setPassageiro(UsuarioDTO passageiro) { this.passageiro = passageiro; }
-    public CaronaDTO getCarona() { return carona; }
-    public void setCarona(CaronaDTO carona) { this.carona = carona; }
+    public CaronaResponseDTO getCarona() { return carona; }
+    public void setCarona(CaronaResponseDTO carona) { this.carona = carona; }
 }

@@ -43,7 +43,7 @@ public class Carona {
 	private BigDecimal valorPorPassageiro;
 
 	@Enumerated(EnumType.STRING)
-	@NotNull
+
 	private StatusCarona statusCarona;
 
 

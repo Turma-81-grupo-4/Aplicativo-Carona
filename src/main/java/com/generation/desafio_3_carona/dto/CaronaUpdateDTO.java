@@ -1,21 +1,26 @@
 package com.generation.desafio_3_carona.dto;
 
-import java.time.LocalDate;
+import com.generation.desafio_3_carona.model.enums.StatusCarona;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class CaronaUpdateDTO {
-    private LocalDate dataViagem;
+    private LocalDateTime dataHoraPartida;
     private String origem;
     private String destino;
-    private int distancia;
+    private Integer distanciaKm;
     private int velocidade;
     private int vagas;
+    private BigDecimal valorPorPassageiro;
+    private StatusCarona statusCarona;
 
-    public LocalDate getDataViagem() {
-        return dataViagem;
+    public LocalDateTime getDataHoraPartida() {
+        return dataHoraPartida;
     }
 
-    public void setDataViagem(LocalDate dataViagem) {
-        this.dataViagem = dataViagem;
+    public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+        this.dataHoraPartida = dataHoraPartida;
     }
 
     public String getOrigem() {
@@ -34,12 +39,12 @@ public class CaronaUpdateDTO {
         this.destino = destino;
     }
 
-    public int getDistancia() {
-        return distancia;
+    public Integer getDistanciaKm() {
+        return distanciaKm;
     }
 
-    public void setDistancia(int distancia) {
-        this.distancia = distancia;
+    public void setDistanciaKm(Integer distanciaKm) {
+        this.distanciaKm = distanciaKm;
     }
 
     public int getVelocidade() {
@@ -56,5 +61,21 @@ public class CaronaUpdateDTO {
 
     public void setVagas(int vagas) {
         this.vagas = vagas;
+    }
+
+    public BigDecimal getValorPorPassageiro() {
+        return valorPorPassageiro;
+    }
+
+    public void setValorPorPassageiro(BigDecimal valorPorPassageiro) {
+        this.valorPorPassageiro = valorPorPassageiro;
+    }
+
+    public StatusCarona getStatusCarona() {
+        return statusCarona;
+    }
+
+    public void setStatusCarona(StatusCarona statusCarona) {
+        this.statusCarona = statusCarona;
     }
 }
