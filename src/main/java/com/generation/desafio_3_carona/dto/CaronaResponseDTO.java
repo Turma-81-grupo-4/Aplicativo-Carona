@@ -21,7 +21,7 @@ public class CaronaResponseDTO {
         private BigDecimal valorPorPassageiro;
         private StatusCarona statusCarona;
         private UsuarioDTO motorista;
-        private List<PassagemInfoDTO> passagensVendidas; // Renomeado para clareza
+        private List<PassagemInfoDTO> passagensVendidas; 
 
     public Long getId() {
         return id;

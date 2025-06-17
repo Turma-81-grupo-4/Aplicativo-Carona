@@ -47,19 +47,30 @@ public class CaronaController {
 
     @GetMapping
     public ResponseEntity<List<CaronaResponseDTO>> getAll() {
-        List<CaronaResponseDTO> caronasDto = caronaRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        List<Carona> caronas = caronaRepository.findAll();
+        
+        for (Carona carona : caronas) {
+        	recursoService.atualizarStatusCaronaAutomaticamente(carona);
+        }
+
+
+        List<CaronaResponseDTO> caronasDto = caronas.stream()
+        		.map(this::convertToDto)
+        		.collect(Collectors.toList());
         return ResponseEntity.ok(caronasDto);
     }
 
      @GetMapping("/{id}")
     public ResponseEntity<CaronaResponseDTO> getById(@PathVariable Long id) {
-        return caronaRepository.findById(id)
-                .map(this::convertToDto)
-                .map(ResponseEntity::ok)
+        Carona carona = caronaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
-    }
+    
+        recursoService.atualizarStatusCaronaAutomaticamente(carona);
+
+        return ResponseEntity.ok(convertToDto(carona));
+     }
+     
+     
     private CaronaResponseDTO convertToDto(Carona carona) {
         CaronaResponseDTO dto = new CaronaResponseDTO();
         dto.setId(carona.getId());
@@ -122,6 +133,7 @@ public class CaronaController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário motorista não existe!"));
 
         recursoService.calcularTempoEChegada(carona);
+        recursoService.atualizarStatusCaronaAutomaticamente(carona);
 
         Carona novaCarona = caronaRepository.save(carona);
 
@@ -145,9 +157,9 @@ public class CaronaController {
         caronaExistente.setVelocidade(caronaUpdateDto.getVelocidade());
         caronaExistente.setVagas(caronaUpdateDto.getVagas());
         caronaExistente.setValorPorPassageiro(caronaUpdateDto.getValorPorPassageiro());
-        caronaExistente.setStatusCarona(caronaUpdateDto.getStatusCarona());
 
         recursoService.calcularTempoEChegada(caronaExistente);
+        recursoService.atualizarStatusCaronaAutomaticamente(caronaExistente);
 
         Carona caronaAtualizada = caronaRepository.save(caronaExistente);
 

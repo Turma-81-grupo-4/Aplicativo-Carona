@@ -2,6 +2,8 @@ package com.generation.desafio_3_carona.dto;
 
 import com.generation.desafio_3_carona.model.enums.StatusCarona;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -9,11 +11,12 @@ public class CaronaUpdateDTO {
     private LocalDateTime dataHoraPartida;
     private String origem;
     private String destino;
+    
+    @NotNull
     private Integer distanciaKm;
-    private int velocidade;
+    private Integer velocidade;
     private int vagas;
     private BigDecimal valorPorPassageiro;
-    private StatusCarona statusCarona;
 
     public LocalDateTime getDataHoraPartida() {
         return dataHoraPartida;
@@ -47,11 +50,11 @@ public class CaronaUpdateDTO {
         this.distanciaKm = distanciaKm;
     }
 
-    public int getVelocidade() {
+    public Integer getVelocidade() {
         return velocidade;
     }
 
-    public void setVelocidade(int velocidade) {
+    public void setVelocidade(Integer velocidade) {
         this.velocidade = velocidade;
     }
 
@@ -71,11 +74,4 @@ public class CaronaUpdateDTO {
         this.valorPorPassageiro = valorPorPassageiro;
     }
 
-    public StatusCarona getStatusCarona() {
-        return statusCarona;
-    }
-
-    public void setStatusCarona(StatusCarona statusCarona) {
-        this.statusCarona = statusCarona;
-    }
 }

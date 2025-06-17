@@ -32,7 +32,7 @@ public class Carona {
 	private Integer distanciaKm;
 
 	@Min(value = 1, message = "A velocidade média deve ser maior que zero.")
-	private int velocidade;
+	private Integer velocidade;
 
 	@Positive( message = "O número de vagas deve ser no mínimo 1.")
 	private int vagas;
@@ -96,7 +96,7 @@ public class Carona {
 		this.destino = destino;
 	}
 
-	public int getDistanciaKm() {
+	public Integer getDistanciaKm() {
 		return distanciaKm;
 	}
 
@@ -104,7 +104,7 @@ public class Carona {
 		this.distanciaKm = distanciaKm;
 	}
 
-	public int getVelocidade() {
+	public Integer getVelocidade() {
 		return velocidade;
 	}
 
@@ -171,4 +171,5 @@ public class Carona {
 	public void setStatusCarona(StatusCarona statusCarona) {
 		this.statusCarona = statusCarona;
 	}
+	
 }
