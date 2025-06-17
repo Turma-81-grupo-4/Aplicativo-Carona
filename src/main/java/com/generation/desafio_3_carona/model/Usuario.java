@@ -2,6 +2,12 @@ package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.io.Serial;
 import java.util.List;
 
 @Entity
@@ -11,9 +17,15 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(min=2)
+    @NotBlank(message = "O nome é obrigatório.")
     private String nome;
+    @Email(message = "O e-mail é obrigatório.")
     private String email;
+    @NotBlank(message = "A senha é obrigatória.")
+    @Size(min=8, message = "A senha deve conter no mínimo 8 caracteres.")
     private String senha;
+    @NotNull(message = "O tipo do usuário é obrigatório.")
     private String tipo;
     @Column(length = 2000)
     private String foto;
@@ -36,6 +48,12 @@ public class Usuario {
     }
 
     public Usuario() {
+    }
+    //implementar enum para tipo
+    public enum TipoUsuario {
+        ADMIN,
+        MOTORISTA,
+        PASSAGEIRO
     }
 
     public Long getId() {

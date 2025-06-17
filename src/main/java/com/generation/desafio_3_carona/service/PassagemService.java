@@ -3,6 +3,8 @@ package com.generation.desafio_3_carona.service;
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.model.Passagem;
 import com.generation.desafio_3_carona.model.Usuario;
+import com.generation.desafio_3_carona.model.enums.StatusCarona;
+import com.generation.desafio_3_carona.model.enums.StatusPassagem;
 import com.generation.desafio_3_carona.repository.CaronaRepository;
 import com.generation.desafio_3_carona.repository.PassagemRepository;
 import com.generation.desafio_3_carona.repository.UsuarioRepository;
@@ -34,6 +36,10 @@ public class PassagemService {
         Carona carona = caronaRepository.findById(caronaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada!"));
 
+        if (carona.getStatusCarona() != StatusCarona.AGENDADA) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível comprar passagem para uma carona que não está agendada.");
+        }
+
         if (carona.getMotorista().getId().equals(passageiro.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O motorista não pode comprar uma passagem para a sua própria carona.");
         }
@@ -51,14 +57,17 @@ public class PassagemService {
         novaPassagem.setCarona(carona);
         novaPassagem.setPassageiro(passageiro);
 
+        novaPassagem.setStatus(StatusPassagem.CONFIRMADA);
         return passagemRepository.save(novaPassagem);
     }
     @Transactional
-    public void deletarPassagem(Long id) {
+    public void deletarPassagem(Long id, String emailUsuarioLogado) {
 
         Passagem passagem = passagemRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passagem não encontrada!"));
-
+        if (!passagem.getPassageiro().getEmail().equals(emailUsuarioLogado)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para deletar esta passagem.");
+        }
         Carona carona = passagem.getCarona();
 
         carona.setVagas(carona.getVagas() + 1);

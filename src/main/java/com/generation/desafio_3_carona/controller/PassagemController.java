@@ -1,9 +1,6 @@
 package com.generation.desafio_3_carona.controller;
 
-import com.generation.desafio_3_carona.dto.CaronaDTO;
-import com.generation.desafio_3_carona.dto.PassagemDTO;
-import com.generation.desafio_3_carona.dto.PassagemResponseDTO;
-import com.generation.desafio_3_carona.dto.UsuarioDTO;
+import com.generation.desafio_3_carona.dto.*;
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.model.Usuario;
 import com.generation.desafio_3_carona.repository.UsuarioRepository;
@@ -31,54 +28,34 @@ import com.generation.desafio_3_carona.repository.PassagemRepository;
 
 public class PassagemController {
 
-    private final CaronaRepository caronaRepository;
     private final UsuarioRepository usuarioRepository;
     private final PassagemRepository passagemRepository;
     private final PassagemService passagemService;
 
     PassagemController(UsuarioRepository usuarioRepository, CaronaRepository caronaRepository, PassagemRepository passagemRepository, RecursoService recursoService, PassagemService passagemService) {
         this.usuarioRepository = usuarioRepository;
-        this.caronaRepository = caronaRepository;
         this.passagemRepository = passagemRepository;
         this.passagemService = passagemService;
     }
 
     @GetMapping
-    public ResponseEntity<List<PassagemResponseDTO>> getAll() {
+    public ResponseEntity<List<PassagemResponseDTO>> getMinhasPassagens() {
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado."));
 
-            String emailUsuarioLogado = authentication.getName();
+        List<Passagem> passagensDoUsuario = passagemRepository.findAllByPassageiro_Id(usuario.getId());
 
-            Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuarioLogado);
-
-            if (usuarioOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-
-            Usuario usuario = usuarioOptional.get();
-            Long usuarioId = usuario.getId();
-
-            List<Passagem> passagensDoUsuario = passagemRepository.findAllByUsuarioId(usuarioId);
-
-
-            if (passagensDoUsuario.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-
-            List<PassagemResponseDTO> passagensDTO = passagensDoUsuario.stream()
-                    .map(this::converterParaDTO)
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(passagensDTO);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (passagensDoUsuario.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+
+        List<PassagemResponseDTO> passagensDTO = passagensDoUsuario.stream()
+                .map(this::converterParaDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(passagensDTO);
     }
 
     private PassagemResponseDTO converterParaDTO(Passagem passagem) {
@@ -87,14 +64,14 @@ public class PassagemController {
 
         Carona carona = passagem.getCarona();
         if (carona != null) {
-            CaronaDTO caronaDTO = new CaronaDTO();
+            CaronaResponseDTO caronaDTO = new CaronaResponseDTO();
             caronaDTO.setId(carona.getId());
             caronaDTO.setOrigem(carona.getOrigem());
             caronaDTO.setDestino(carona.getDestino());
-            caronaDTO.setDataViagem(carona.getDataViagem());
-            caronaDTO.setVagas(carona.getVagas());
-            caronaDTO.setDistancia(carona.getDistancia());
-            caronaDTO.setTempoViagem(carona.getTempoViagem());
+            caronaDTO.setDataHoraPartida(carona.getDataHoraPartida());
+            caronaDTO.setDataHoraChegada(carona.getDataHoraChegada());
+            caronaDTO.setValorPorPassageiro(carona.getValorPorPassageiro());
+            caronaDTO.setStatusCarona(carona.getStatusCarona());
 
 
             Usuario motorista = carona.getMotorista();
@@ -113,19 +90,18 @@ public class PassagemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Passagem> getById(@PathVariable Long id) {
-        return passagemRepository.findById(id).map(ResponseEntity::ok)
+    public ResponseEntity<PassagemResponseDTO> getById(@PathVariable Long id) {
+        return passagemRepository.findById(id)
+                .map(this::converterParaDTO)
+                .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Passagem não encontrada"));
     }
 
     @PostMapping("/criar")
-    public ResponseEntity<Passagem> criarPassagem(@RequestBody PassagemDTO passagemDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailUsuarioLogado = authentication.getName();
-
+    public ResponseEntity<PassagemResponseDTO> criarPassagem(@RequestBody PassagemDTO passagemDTO) {
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         Passagem novaPassagem = passagemService.criarPassagem(passagemDTO.getCaronaId(), emailUsuarioLogado);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaPassagem);
+        return ResponseEntity.status(HttpStatus.CREATED).body(converterParaDTO(novaPassagem));
     }
 
     @PutMapping
@@ -138,7 +114,7 @@ public class PassagemController {
     @DeleteMapping({"/{id}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePassagem(@PathVariable Long id) {
-        System.out.println(">>> BACKEND CONTROLLER: Recebido pedido para deletar ID: " + id);
-        passagemService.deletarPassagem(id);
+        String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+        passagemService.deletarPassagem(id, emailUsuarioLogado);
     }
 }

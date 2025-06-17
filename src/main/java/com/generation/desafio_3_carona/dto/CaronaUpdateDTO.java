@@ -1,21 +1,29 @@
 package com.generation.desafio_3_carona.dto;
 
-import java.time.LocalDate;
+import com.generation.desafio_3_carona.model.enums.StatusCarona;
+
+import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class CaronaUpdateDTO {
-    private LocalDate dataViagem;
+    private LocalDateTime dataHoraPartida;
     private String origem;
     private String destino;
-    private int distancia;
-    private int velocidade;
+    
+    @NotNull
+    private Integer distanciaKm;
+    private Integer velocidade;
     private int vagas;
+    private BigDecimal valorPorPassageiro;
 
-    public LocalDate getDataViagem() {
-        return dataViagem;
+    public LocalDateTime getDataHoraPartida() {
+        return dataHoraPartida;
     }
 
-    public void setDataViagem(LocalDate dataViagem) {
-        this.dataViagem = dataViagem;
+    public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+        this.dataHoraPartida = dataHoraPartida;
     }
 
     public String getOrigem() {
@@ -34,19 +42,19 @@ public class CaronaUpdateDTO {
         this.destino = destino;
     }
 
-    public int getDistancia() {
-        return distancia;
+    public Integer getDistanciaKm() {
+        return distanciaKm;
     }
 
-    public void setDistancia(int distancia) {
-        this.distancia = distancia;
+    public void setDistanciaKm(Integer distanciaKm) {
+        this.distanciaKm = distanciaKm;
     }
 
-    public int getVelocidade() {
+    public Integer getVelocidade() {
         return velocidade;
     }
 
-    public void setVelocidade(int velocidade) {
+    public void setVelocidade(Integer velocidade) {
         this.velocidade = velocidade;
     }
 
@@ -57,4 +65,13 @@ public class CaronaUpdateDTO {
     public void setVagas(int vagas) {
         this.vagas = vagas;
     }
+
+    public BigDecimal getValorPorPassageiro() {
+        return valorPorPassageiro;
+    }
+
+    public void setValorPorPassageiro(BigDecimal valorPorPassageiro) {
+        this.valorPorPassageiro = valorPorPassageiro;
+    }
+
 }

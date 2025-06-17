@@ -1,10 +1,11 @@
 package com.generation.desafio_3_carona.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CaronaDTO {
     private Long id;
-    private LocalDate dataViagem;
+    private LocalDateTime dataHoraPartida;
     private String origem;
     private String destino;
     private UsuarioDTO motorista;
@@ -13,9 +14,9 @@ public class CaronaDTO {
     private double tempoViagem;
 
     public CaronaDTO() {}
-    public CaronaDTO(Long id, LocalDate dataViagem, String origem, String destino, UsuarioDTO motorista) {
+    public CaronaDTO(Long id, LocalDateTime dataHoraPartida, String origem, String destino, UsuarioDTO motorista) {
         this.id = id;
-        this.dataViagem = dataViagem;
+        this.dataHoraPartida = dataHoraPartida;
         this.origem = origem;
         this.destino = destino;
         this.motorista = motorista;
@@ -53,12 +54,12 @@ public class CaronaDTO {
         this.id = id;
     }
 
-    public LocalDate getDataViagem() {
-        return dataViagem;
+    public LocalDateTime getDataHoraPartida() {
+        return dataHoraPartida;
     }
 
-    public void setDataViagem(LocalDate dataViagem) {
-        this.dataViagem = dataViagem;
+    public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+        this.dataHoraPartida = dataHoraPartida;
     }
 
     public String getOrigem() {
@@ -84,4 +85,5 @@ public class CaronaDTO {
     public void setMotorista(UsuarioDTO motorista) {
         this.motorista = motorista;
     }
+
 }

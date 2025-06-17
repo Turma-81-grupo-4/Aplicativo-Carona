@@ -32,49 +32,58 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/caronas")
-
 public class CaronaController {
 
     private final RecursoService recursoService;
-
     private final CaronaRepository caronaRepository;
-
     private final UsuarioRepository usuarioRepository;
 
-    private final PassagemRepository passagemRepository;
-
-    CaronaController(RecursoService recursoService, CaronaRepository caronaRepository, UsuarioRepository usuarioRepository, PassagemRepository passagemRepository) {
+    CaronaController(RecursoService recursoService, CaronaRepository caronaRepository, UsuarioRepository usuarioRepository) {
         this.recursoService = recursoService;
         this.caronaRepository = caronaRepository;
         this.usuarioRepository = usuarioRepository;
-        this.passagemRepository = passagemRepository;
+
     }
 
     @GetMapping
     public ResponseEntity<List<CaronaResponseDTO>> getAll() {
-        List<CaronaResponseDTO> caronasDto = caronaRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        List<Carona> caronas = caronaRepository.findAll();
+        
+        for (Carona carona : caronas) {
+        	recursoService.atualizarStatusCaronaAutomaticamente(carona);
+        }
+
+
+        List<CaronaResponseDTO> caronasDto = caronas.stream()
+        		.map(this::convertToDto)
+        		.collect(Collectors.toList());
         return ResponseEntity.ok(caronasDto);
     }
 
      @GetMapping("/{id}")
     public ResponseEntity<CaronaResponseDTO> getById(@PathVariable Long id) {
-        return caronaRepository.findById(id)
-                .map(this::convertToDto)
-                .map(ResponseEntity::ok)
+        Carona carona = caronaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
-    }
+    
+        recursoService.atualizarStatusCaronaAutomaticamente(carona);
+
+        return ResponseEntity.ok(convertToDto(carona));
+     }
+     
+     
     private CaronaResponseDTO convertToDto(Carona carona) {
         CaronaResponseDTO dto = new CaronaResponseDTO();
         dto.setId(carona.getId());
         dto.setOrigem(carona.getOrigem());
         dto.setDestino(carona.getDestino());
         dto.setVagas(carona.getVagas());
-        dto.setDataViagem(carona.getDataViagem());
+        dto.setDataHoraPartida(carona.getDataHoraPartida());
+        dto.setDataHoraChegada(carona.getDataHoraChegada());
         dto.setTempoViagem(carona.getTempoViagem());
-        dto.setDistancia(carona.getDistancia());
+        dto.setDistanciaKm(carona.getDistanciaKm());
         dto.setVelocidade(carona.getVelocidade());
+        dto.setValorPorPassageiro(carona.getValorPorPassageiro());
+        dto.setStatusCarona(carona.getStatusCarona());
 
         if (carona.getMotorista() != null) {
             UsuarioDTO motoristaDto = new UsuarioDTO(
@@ -99,9 +108,8 @@ public class CaronaController {
                         return new PassagemInfoDTO(passagem.getId(), passageiroDto);
                     })
                     .collect(Collectors.toList());
-            dto.setPassagemVendidaNessaCarona(passagensInfo);
+            dto.setPassagensVendidas(passagensInfo);
         }
-
         return dto;
     }
 
@@ -120,36 +128,38 @@ public class CaronaController {
     }
 
     @PostMapping
-    public ResponseEntity<Carona> post(@Valid @RequestBody Carona carona) {
-        if (usuarioRepository.existsById(carona.getMotorista().getId())) {
-            recursoService.calcularTempo(carona);
-            return ResponseEntity.status(HttpStatus.CREATED).body(caronaRepository.save(carona));
-        }
+    public ResponseEntity<CaronaResponseDTO> post(@Valid @RequestBody Carona carona) {
+        usuarioRepository.findById(carona.getMotorista().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário motorista não existe!"));
 
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não existe!", null);
+        recursoService.calcularTempoEChegada(carona);
+        recursoService.atualizarStatusCaronaAutomaticamente(carona);
+
+        Carona novaCarona = caronaRepository.save(carona);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(convertToDto(novaCarona));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Carona> put(@PathVariable Long id, @Valid @RequestBody CaronaUpdateDTO caronaUpdateDto) {
-
         Carona caronaExistente = caronaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carona não encontrada"));
 
-
         String usuarioEmail = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-
         if (!caronaExistente.getMotorista().getEmail().equals(usuarioEmail)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não tem permissão para alterar esta carona.");
         }
 
-        caronaExistente.setDataViagem(caronaUpdateDto.getDataViagem());
+        caronaExistente.setDataHoraPartida(caronaUpdateDto.getDataHoraPartida());
         caronaExistente.setOrigem(caronaUpdateDto.getOrigem());
         caronaExistente.setDestino(caronaUpdateDto.getDestino());
-        caronaExistente.setDistancia(caronaUpdateDto.getDistancia());
+        caronaExistente.setDistanciaKm(caronaUpdateDto.getDistanciaKm());
         caronaExistente.setVelocidade(caronaUpdateDto.getVelocidade());
         caronaExistente.setVagas(caronaUpdateDto.getVagas());
+        caronaExistente.setValorPorPassageiro(caronaUpdateDto.getValorPorPassageiro());
 
-        recursoService.calcularTempo(caronaExistente);
+        recursoService.calcularTempoEChegada(caronaExistente);
+        recursoService.atualizarStatusCaronaAutomaticamente(caronaExistente);
 
         Carona caronaAtualizada = caronaRepository.save(caronaExistente);
 
