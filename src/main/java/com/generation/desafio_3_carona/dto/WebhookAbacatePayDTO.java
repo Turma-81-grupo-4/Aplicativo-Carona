@@ -86,6 +86,7 @@ public class WebhookAbacatePayDTO {
 
 	    public static class Customer {
 	        private String email;
+	        private Metadata metadata;
 
 			public String getEmail() {
 				return email;
@@ -95,10 +96,74 @@ public class WebhookAbacatePayDTO {
 				this.email = email;
 			}
 
+			public Metadata getMetadata() {
+				return metadata;
+			}
+
+			public void setMetadata(Metadata metadata) {
+				this.metadata = metadata;
+			}
+
 	       
 	    }
+	    
+	    public static class Metadata {
+	        private String cellphone;
+	        private String email;
+	        private String name;
+	        private String taxId;
+	        
+	        
 
-	    public static class Product {
+	    public String getCellphone() {
+				return cellphone;
+			}
+
+
+
+			public void setCellphone(String cellphone) {
+				this.cellphone = cellphone;
+			}
+
+
+
+			public String getEmail() {
+				return email;
+			}
+
+
+
+			public void setEmail(String email) {
+				this.email = email;
+			}
+
+
+
+			public String getName() {
+				return name;
+			}
+
+
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+
+
+			public String getTaxId() {
+				return taxId;
+			}
+
+
+
+			public void setTaxId(String taxId) {
+				this.taxId = taxId;
+			}
+	    }
+
+
+		public static class Product {
 	        private String externalId;
 
 			public String getExternalId() {

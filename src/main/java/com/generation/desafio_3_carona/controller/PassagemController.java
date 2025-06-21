@@ -53,13 +53,15 @@ public class PassagemController {
 
         List<Passagem> passagensDoUsuario = passagemRepository.findAllByPassageiro_Id(usuario.getId());
 
-        if (passagensDoUsuario.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
+        
         List<PassagemResponseDTO> passagensDTO = passagensDoUsuario.stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
+        
+
+        if (passagensDoUsuario.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(passagensDTO);
     }
