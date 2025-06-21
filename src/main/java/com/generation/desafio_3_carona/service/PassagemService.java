@@ -44,7 +44,7 @@ public class PassagemService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O motorista não pode comprar uma passagem para a sua própria carona.");
         }
 
-        if (passagemRepository.existsByPassageiroIdAndCaronaId(passageiro.getId(), caronaId)) {
+        if (passagemRepository.existsByPassageiro_IdAndCarona_Id(passageiro.getId(), caronaId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Você já comprou uma passagem para esta carona.");
         }
 

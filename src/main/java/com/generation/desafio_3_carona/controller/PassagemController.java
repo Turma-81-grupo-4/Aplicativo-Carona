@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.generation.desafio_3_carona.service.PagamentoService;
 import com.generation.desafio_3_carona.service.PassagemService;
 import com.generation.desafio_3_carona.service.RecursoService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,6 +30,9 @@ import com.generation.desafio_3_carona.repository.PassagemRepository;
 @RequestMapping("/passagens")
 
 public class PassagemController {
+	
+	@Autowired
+    private PagamentoService pagamento;
 
     private final UsuarioRepository usuarioRepository;
     private final PassagemRepository passagemRepository;
@@ -47,13 +53,15 @@ public class PassagemController {
 
         List<Passagem> passagensDoUsuario = passagemRepository.findAllByPassageiro_Id(usuario.getId());
 
-        if (passagensDoUsuario.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
+        
         List<PassagemResponseDTO> passagensDTO = passagensDoUsuario.stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
+        
+
+        if (passagensDoUsuario.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(passagensDTO);
     }
@@ -103,6 +111,8 @@ public class PassagemController {
         Passagem novaPassagem = passagemService.criarPassagem(passagemDTO.getCaronaId(), emailUsuarioLogado);
         return ResponseEntity.status(HttpStatus.CREATED).body(converterParaDTO(novaPassagem));
     }
+   
+    
 
     @PutMapping
     public ResponseEntity<Passagem> updatePassagem(@RequestBody Passagem passagem) {
@@ -117,4 +127,25 @@ public class PassagemController {
         String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
         passagemService.deletarPassagem(id, emailUsuarioLogado);
     }
+    
+    
+    
+    @PostMapping("/pagamento/abacate")
+    public ResponseEntity<String> criarPagamento(@RequestBody PagamentoRequestDTO dto) {
+        try {
+            String emailUsuarioLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            if (emailUsuarioLogado == null || emailUsuarioLogado.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+            }
+
+            
+
+            String linkPagamento = pagamento.criarCobranca(dto);
+            return ResponseEntity.ok(linkPagamento);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar pagamento: " + e.getMessage());
+        }
+    }
+
 }
