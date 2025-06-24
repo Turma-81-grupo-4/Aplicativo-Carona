@@ -14,7 +14,7 @@ import java.util.Date;
 public class RecursoService {
 	public void calcularTempoEChegada(Carona carona) {
 		Integer velocidade = carona.getVelocidade();
-		Integer distancia = carona.getDistanciaKm();
+		Double distancia = carona.getDistanciaKm();
 		LocalDateTime partida = carona.getDataHoraPartida();
 
 		if (partida == null || distancia == null || velocidade == null || velocidade <= 0 || distancia <= 0) {

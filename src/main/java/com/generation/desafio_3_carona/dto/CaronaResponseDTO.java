@@ -16,12 +16,13 @@ public class CaronaResponseDTO {
         private LocalDateTime dataHoraPartida;
         private LocalDateTime dataHoraChegada;
         private double tempoViagem;
-        private Integer distanciaKm;
+        private Double distanciaKm;
         private int velocidade;
         private BigDecimal valorPorPassageiro;
         private StatusCarona statusCarona;
         private UsuarioDTO motorista;
-        private List<PassagemInfoDTO> passagensVendidas; 
+        private List<PassagemInfoDTO> passagensVendidas;
+
 
     public Long getId() {
         return id;
@@ -79,11 +80,11 @@ public class CaronaResponseDTO {
         this.tempoViagem = tempoViagem;
     }
 
-    public Integer getDistanciaKm() {
+    public Double getDistanciaKm() {
         return distanciaKm;
     }
 
-    public void setDistanciaKm(Integer distanciaKm) {
+    public void setDistanciaKm(Double distanciaKm) {
         this.distanciaKm = distanciaKm;
     }
 

@@ -11,10 +11,9 @@ public class CaronaUpdateDTO {
     private LocalDateTime dataHoraPartida;
     private String origem;
     private String destino;
-    
-    @NotNull
-    private Integer distanciaKm;
-    private Integer velocidade;
+    private Double distanciaKm;
+    private int velocidade;
+
     private int vagas;
     private BigDecimal valorPorPassageiro;
 
@@ -42,11 +41,11 @@ public class CaronaUpdateDTO {
         this.destino = destino;
     }
 
-    public Integer getDistanciaKm() {
+    public Double getDistanciaKm() {
         return distanciaKm;
     }
 
-    public void setDistanciaKm(Integer distanciaKm) {
+    public void setDistanciaKm(Double distanciaKm) {
         this.distanciaKm = distanciaKm;
     }
 

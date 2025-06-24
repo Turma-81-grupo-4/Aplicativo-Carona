@@ -1,7 +1,9 @@
 package com.generation.desafio_3_carona.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.generation.desafio_3_carona.model.enums.StatusCarona;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -18,8 +20,12 @@ public class Carona {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@FutureOrPresent(message = "A data da viagem não pode ser no passado.")
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@JsonProperty("data_hora_partida")
 	private LocalDateTime dataHoraPartida;
 
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	@JsonProperty("data_hora_chegada")
 	private LocalDateTime dataHoraChegada;
 
 	@NotBlank(message = "O campo origem é obrigatório.")
@@ -29,7 +35,8 @@ public class Carona {
 	private String destino;
 
 	@Positive( message = "A distância deve ser de no mínimo 1 km.")
-	private Integer distanciaKm;
+	@JsonProperty("distancia_km")
+	private Double distanciaKm;
 
 	@Min(value = 1, message = "A velocidade média deve ser maior que zero.")
 	private Integer velocidade;
@@ -40,6 +47,7 @@ public class Carona {
 
 	@NotNull(message = "O valor por passageiro é obrigatório")
 	@DecimalMin(value = "0.0", inclusive = false)
+	@JsonProperty("valor_por_passageiro")
 	private BigDecimal valorPorPassageiro;
 
 	@Enumerated(EnumType.STRING)
@@ -96,11 +104,12 @@ public class Carona {
 		this.destino = destino;
 	}
 
-	public Integer getDistanciaKm() {
+	public double getDistanciaKm() {
+
 		return distanciaKm;
 	}
 
-	public void setDistanciaKm(int distanciaKm) {
+	public void setDistanciaKm(double distanciaKm) {
 		this.distanciaKm = distanciaKm;
 	}
 
@@ -152,7 +161,7 @@ public class Carona {
 		this.dataHoraChegada = dataHoraChegada;
 	}
 
-	public void setDistanciaKm(Integer distanciaKm) {
+	public void setDistanciaKm(Double distanciaKm) {
 		this.distanciaKm = distanciaKm;
 	}
 
