@@ -23,6 +23,7 @@ public class CaronaResponseDTO {
         private UsuarioDTO motorista;
         private List<PassagemInfoDTO> passagensVendidas;
 
+
     public Long getId() {
         return id;
     }

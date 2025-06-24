@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.generation.desafio_3_carona.model.Carona;
 import com.generation.desafio_3_carona.model.Usuario;
+import com.generation.desafio_3_carona.model.enums.StatusCarona;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -38,6 +39,26 @@ public class RecursoService {
 	}
 
 	public void calcularChegada(@Valid Carona carona) {
+
+	}
+	
+	
+	
+	public void atualizarStatusCaronaAutomaticamente (Carona carona) {
+		LocalDateTime agora = LocalDateTime.now();
+		LocalDateTime partida = carona.getDataHoraPartida();
+		LocalDateTime chegada = carona.getDataHoraChegada();
+		
+		if (partida == null || chegada == null) 
+			return;
+		
+		if (agora.isBefore(partida)) {
+		    carona.setStatusCarona(StatusCarona.AGENDADA);
+		} else if (!agora.isBefore(partida) && !agora.isAfter(chegada)) {
+		    carona.setStatusCarona(StatusCarona.EM_ANDAMENTO);
+		} else if (agora.isAfter(chegada)) {
+		    carona.setStatusCarona(StatusCarona.FINALIZADA);
+		}
 
 	}
 }
