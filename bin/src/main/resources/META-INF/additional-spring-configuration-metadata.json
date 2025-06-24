@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "ABACATEPAY_WEBHOOK_SECRET",
+  "type": "java.lang.String",
+  "description": "A description for 'ABACATEPAY_WEBHOOK_SECRET'"
+}]}
