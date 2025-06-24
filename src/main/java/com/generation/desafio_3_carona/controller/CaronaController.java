@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 import com.generation.desafio_3_carona.dto.CaronaResponseDTO;
 import com.generation.desafio_3_carona.dto.PassagemInfoDTO;
 import com.generation.desafio_3_carona.dto.UsuarioDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +40,7 @@ public class CaronaController {
     private final RecursoService recursoService;
     private final CaronaRepository caronaRepository;
     private final UsuarioRepository usuarioRepository;
-
+    private static final Logger log = LoggerFactory.getLogger(CaronaController.class);
     CaronaController(RecursoService recursoService, CaronaRepository caronaRepository, UsuarioRepository usuarioRepository) {
         this.recursoService = recursoService;
         this.caronaRepository = caronaRepository;
@@ -117,15 +120,25 @@ public class CaronaController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<CaronaResponseDTO> post(@Valid @RequestBody Carona carona) {
-        usuarioRepository.findById(carona.getMotorista().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário motorista não existe!"));
+        log.info("Valor de dataHoraPartida recebido após JSON binding: {}", carona.getDataHoraPartida());
+        if (!usuarioRepository.existsById(carona.getMotorista().getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário motorista não existe!", null);
+        }
 
-        recursoService.calcularTempoEChegada(carona);
+        try {
+            recursoService.calcularTempoEChegada(carona);
 
-        Carona novaCarona = caronaRepository.save(carona);
+            Carona caronaSalva = caronaRepository.save(carona);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(convertToDto(novaCarona));
+            CaronaResponseDTO dtoResposta = convertToDto(caronaSalva);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(dtoResposta);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno ao processar a carona.", e);
+        }
     }
 
     @PutMapping("/{id}")

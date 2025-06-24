@@ -22,30 +22,6 @@ public class CaronaDTO {
         this.motorista = motorista;
     }
 
-    public int getVagas() {
-        return vagas;
-    }
-
-    public void setVagas(int vagas) {
-        this.vagas = vagas;
-    }
-
-    public double getDistancia() {
-        return distancia;
-    }
-
-    public void setDistancia(double distancia) {
-        this.distancia = distancia;
-    }
-
-    public double getTempoViagem() {
-        return tempoViagem;
-    }
-
-    public void setTempoViagem(double tempoViagem) {
-        this.tempoViagem = tempoViagem;
-    }
-
     public Long getId() {
         return id;
     }
@@ -86,7 +62,27 @@ public class CaronaDTO {
         this.motorista = motorista;
     }
 
-    public void setDataHoraPartida(LocalDateTime dataHoraPartida) {
+    public int getVagas() {
+        return vagas;
+    }
 
+    public void setVagas(int vagas) {
+        this.vagas = vagas;
+    }
+
+    public double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(double distancia) {
+        this.distancia = distancia;
+    }
+
+    public double getTempoViagem() {
+        return tempoViagem;
+    }
+
+    public void setTempoViagem(double tempoViagem) {
+        this.tempoViagem = tempoViagem;
     }
 }

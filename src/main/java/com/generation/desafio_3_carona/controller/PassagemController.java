@@ -72,6 +72,9 @@ public class PassagemController {
             caronaDTO.setDataHoraChegada(carona.getDataHoraChegada());
             caronaDTO.setValorPorPassageiro(carona.getValorPorPassageiro());
             caronaDTO.setStatusCarona(carona.getStatusCarona());
+            caronaDTO.setVagas(carona.getVagas());
+            caronaDTO.setDistanciaKm(carona.getDistanciaKm());
+            caronaDTO.setTempoViagem(carona.getTempoViagem());
 
 
             Usuario motorista = carona.getMotorista();
