@@ -3,6 +3,7 @@ package com.generation.desafio_3_carona.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.generation.desafio_3_carona.dto.AtualizarSenhaDTO;
 import com.generation.desafio_3_carona.dto.UsuarioUpdateDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +77,13 @@ public class UsuarioController {
         return usuarioService.atualizarDadosUsuario(username, usuarioUpdateDTO)
                 .map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+    @PutMapping("/senha")
+            public ResponseEntity<Usuario> atualizarSenha(@Valid @RequestBody AtualizarSenhaDTO atualizarSenhaDTO){
+        Optional<Usuario> usuarioAtualizado = usuarioService.atualizarSenha(atualizarSenhaDTO);
+        return usuarioAtualizado
+                .map(ResponseEntity::ok)
+                .orElse(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
     }
 
     @DeleteMapping("/{id}")

@@ -1,7 +1,11 @@
 package com.generation.desafio_3_carona.service;
 
 import java.util.Optional;
+
+import com.generation.desafio_3_carona.dto.AtualizarSenhaDTO;
 import com.generation.desafio_3_carona.dto.UsuarioUpdateDTO;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,11 +26,13 @@ public class UsuarioService {
     private final JwtService jwtService;
 
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public UsuarioService(UsuarioRepository usuarioRepository, JwtService jwtService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
@@ -111,6 +117,20 @@ public class UsuarioService {
             return Optional.of(usuarioUpdateDTO);
         }
 
+        return Optional.empty();
+    }
+    public Optional<Usuario> atualizarSenha(AtualizarSenhaDTO atualizarSenhaDTO) {
+        String emailUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(emailUsuario);
+        if(usuarioOptional.isPresent()){
+            Usuario usuario = usuarioOptional.get();
+                    if(passwordEncoder.matches(atualizarSenhaDTO.getSenhaAtual(), usuario.getSenha())){
+                        usuario.setSenha(passwordEncoder.encode(atualizarSenhaDTO.getNovaSenha()));
+                        return Optional.of(usuarioRepository.save(usuario));
+                    }else{
+                        return Optional.empty();
+                    }
+        }
         return Optional.empty();
     }
 
