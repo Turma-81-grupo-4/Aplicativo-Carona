@@ -50,8 +50,8 @@ public class PagamentoService {
 	    customer.setTaxId("11144477735");
 	    request.setCustomer(customer);
 
-	    request.setReturnUrl("http://localhost:5173/caronas");
-	    request.setCompletionUrl("http://localhost:5173/passagens");
+	    request.setReturnUrl("https://carona-nu.vercel.app");
+	    request.setCompletionUrl("https://carona-nu.vercel.app");
 
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
